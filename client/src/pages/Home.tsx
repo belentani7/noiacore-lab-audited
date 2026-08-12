@@ -1,714 +1,383 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Terminal as TerminalIcon, Cpu, Database, Activity, Shield, Sparkles, 
-  Layers, Compass, Search, Play, ArrowUpRight, RefreshCw, Eye, 
-  Command, Box, Globe, Zap, CheckCircle2, AlertCircle, Volume2, VolumeX, Menu, X
+/*
+ * NOIACORE DESIGN SYSTEM REMINDER
+ * Movimiento: Dark Sci-Fi / Immersive FUI.
+ * Principio: la atmósfera puede ser compleja; la lectura nunca debe serlo.
+ * Contrato visual: fondo #040406, azul #7d9bff, naranja #ff9e5a, Space Grotesk + JetBrains Mono.
+ * Layout: editorial asimétrico, módulos numerados, rail lateral y capas orbitales.
+ */
+import { useEffect, useMemo, useState } from 'react';
+import {
+  Activity,
+  ArrowDownRight,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  AudioLines,
+  Check,
+  ChevronDown,
+  Circle,
+  Command,
+  Cpu,
+  Crosshair,
+  Database,
+  ExternalLink,
+  Eye,
+  Fingerprint,
+  Gauge,
+  Grid3X3,
+  Layers3,
+  Menu,
+  MoveRight,
+  Orbit,
+  PanelTop,
+  Play,
+  Radio,
+  ScanLine,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Terminal as TerminalIcon,
+  X,
+  Zap,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { NeuralCanvas } from '@/components/NeuralCanvas';
+import { TerminalPanel } from '@/components/TerminalPanel';
+import { modules, navItems, signalFeed, systemMetrics, type ModuleCategory, type NoiacoreModule } from '@/lib/noiacoreData';
 
-export default function Home() {
-  const [activeTab, setActiveTab] = useState<'all' | 'systems' | 'projects' | 'agents' | 'lab'>('all');
-  const [terminalOpen, setTerminalOpen] = useState(false);
-  const [terminalInput, setTerminalInput] = useState('');
-  const [terminalLogs, setTerminalLogs] = useState<string[]>([
-    'NOIACORE KERNEL v4.2.0 OMEGA INITIALIZED.',
-    'Neural link established with primary node.',
-    'Type "help" for available system commands.'
-  ]);
-  const [audioActive, setAudioActive] = useState(false);
-  const [fps, setFps] = useState(144);
-  const [nodes, setNodes] = useState(1284);
-  const [intentQuery, setIntentQuery] = useState('');
-  const [selectedExperience, setSelectedExperience] = useState<any | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+const heroImage = '/manus-storage/noiacore-hero_5f6d0c5f.jpg';
+const referenceGrid = '/manus-storage/noiacore-reference-grid_6b1356aa.png';
+const referenceDashboard = '/manus-storage/noiacore-reference-dashboard_e8759298.png';
+const neuralAtlas = '/manus-storage/noiacore-neural-atlas_bf7dca12.jpg';
+const corridorImage = '/manus-storage/noiacore-lab-corridor_16db8691.jpg';
+const orbitImage = '/manus-storage/noiacore-orbit_bc01eda1.jpg';
+const markImage = '/manus-storage/noiacore-mark_07a65b70.png';
 
-  // Canvas ref for black hole / gravitational lensing hero effect
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+const categories: Array<'ALL' | ModuleCategory> = ['ALL', 'CORE', 'SYSTEMS', 'AGENTS', 'LAB', 'IMPACT'];
+
+function SectionEyebrow({ index, children, tone = 'blue' }: { index: string; children: React.ReactNode; tone?: 'blue' | 'orange' | 'neutral' }) {
+  return (
+    <div className={`section-eyebrow section-eyebrow--${tone}`}>
+      <span className="section-eyebrow__index">{index}</span>
+      <span className="section-eyebrow__line" />
+      <span>{children}</span>
+    </div>
+  );
+}
+
+function OrbitalMark({ small = false }: { small?: boolean }) {
+  return (
+    <div className={`orbital-mark ${small ? 'orbital-mark--small' : ''}`} aria-hidden="true">
+      <span className="orbital-mark__ring orbital-mark__ring--one" />
+      <span className="orbital-mark__ring orbital-mark__ring--two" />
+      <span className="orbital-mark__ring orbital-mark__ring--three" />
+      <span className="orbital-mark__core" />
+    </div>
+  );
+}
+
+function MetricBar({ label, value, color, suffix }: { label: string; value: number; color: string; suffix: string }) {
+  return (
+    <div className="metric-bar">
+      <div className="metric-bar__meta">
+        <span>{label}</span>
+        <strong>{value}{suffix}</strong>
+      </div>
+      <div className="metric-bar__track"><span className={`metric-bar__fill metric-bar__fill--${color}`} style={{ width: `${value}%` }} /></div>
+    </div>
+  );
+}
+
+function SignalRow({ time, type, message, tone }: { time: string; type: string; message: string; tone: string }) {
+  return (
+    <div className="signal-row">
+      <span className="signal-row__time">{time}</span>
+      <span className={`signal-row__type signal-row__type--${tone}`}>{type}</span>
+      <span className="signal-row__message">{message}</span>
+      <span className="signal-row__pulse" />
+    </div>
+  );
+}
+
+function ModuleCard({ module, onOpen, featured = false }: { module: NoiacoreModule; onOpen: (module: NoiacoreModule) => void; featured?: boolean }) {
+  return (
+    <article className={`module-card module-card--${module.tone} ${featured ? 'module-card--featured' : ''}`} onClick={() => onOpen(module)} tabIndex={0} onKeyDown={(event) => { if (event.key === 'Enter') onOpen(module); }}>
+      <div className="module-card__image-wrap">
+        <img src={module.image} alt="" className="module-card__image" loading="lazy" onError={(event) => { event.currentTarget.src = referenceDashboard; }} />
+        <div className="module-card__image-overlay" />
+        <span className="module-card__index">{module.index}</span>
+        <span className="module-card__state"><span />{module.signal}</span>
+      </div>
+      <div className="module-card__body">
+        <div className="module-card__meta">
+          <span>{module.label}</span>
+          <span>{module.category}</span>
+        </div>
+        <h3>{module.title}</h3>
+        <p>{module.statement}</p>
+        <div className="module-card__footer">
+          <span>{module.metric} <small>{module.metricLabel}</small></span>
+          <span className="module-card__arrow"><ArrowUpRight size={16} /></span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function Header({ onTerminal, onMenu, menuOpen }: { onTerminal: () => void; onMenu: () => void; menuOpen: boolean }) {
+  return (
+    <header className="site-header">
+      <a className="site-header__brand" href="#top" aria-label="NOIACORE LAB — inicio">
+        <div className="site-header__mark"><img src={markImage} alt="" onError={(event) => { event.currentTarget.style.display = 'none'; }} /><OrbitalMark small /></div>
+        <span className="site-header__wordmark">N<span>O</span>IACORE</span>
+        <span className="site-header__version">LAB / 4.2.0</span>
+      </a>
+      <nav className="site-header__nav" aria-label="Navegación principal">
+        {navItems.map((item) => <a href={`#${item.id}`} key={item.id}><small>{item.index}</small>{item.label}</a>)}
+      </nav>
+      <div className="site-header__actions">
+        <span className="site-header__status"><span />SYSTEM ONLINE</span>
+        <button type="button" className="header-console-button" onClick={onTerminal}><Command size={14} /> <span>CONSOLE</span></button>
+        <button type="button" className="header-menu-button" onClick={onMenu} aria-expanded={menuOpen} aria-label="Abrir menú">{menuOpen ? <X size={18} /> : <Menu size={18} />}</button>
+      </div>
+    </header>
+  );
+}
+
+function MobileMenu({ open, onClose, onTerminal }: { open: boolean; onClose: () => void; onTerminal: () => void }) {
+  if (!open) return null;
+  return (
+    <div className="mobile-menu" role="dialog" aria-modal="true" aria-label="Menú móvil">
+      <div className="mobile-menu__backdrop" onClick={onClose} />
+      <div className="mobile-menu__panel">
+        <div className="mobile-menu__top"><span>NAVIGATE / 05</span><button type="button" onClick={onClose} aria-label="Cerrar menú"><X size={18} /></button></div>
+        <nav>
+          {navItems.map((item) => <a href={`#${item.id}`} key={item.id} onClick={onClose}><span>{item.index}</span>{item.label}<ArrowUpRight size={15} /></a>)}
+        </nav>
+        <button type="button" className="mobile-menu__console" onClick={onTerminal}><TerminalIcon size={15} />OPEN LOCAL CONSOLE</button>
+      </div>
+    </div>
+  );
+}
+
+function HeroSection({ onTerminal, onIntent }: { onTerminal: () => void; onIntent: (value: string) => void }) {
+  const [intent, setIntent] = useState('');
+  const [signal, setSignal] = useState(0);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let animationFrameId: number;
-    let width = (canvas.width = canvas.offsetWidth);
-    let height = (canvas.height = canvas.offsetHeight);
-
-    const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = canvas.offsetWidth;
-      height = canvas.height = canvas.offsetHeight;
-    };
-    window.addEventListener('resize', handleResize);
-
-    // Mouse tracking for gravitational distortion
-    let mouse = { x: width / 2, y: height / 2, targetX: width / 2, targetY: height / 2 };
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mouse.targetX = e.clientX - rect.left;
-      mouse.targetY = e.clientY - rect.top;
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-
-    // Starfield & Accretion Disk particles
-    const stars: Array<{ x: number; y: number; size: number; alpha: number; speed: number }> = [];
-    for (let i = 0; i < 200; i++) {
-      stars.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        size: Math.random() * 1.5,
-        alpha: Math.random(),
-        speed: Math.random() * 0.5 + 0.1
-      });
-    }
-
-    let angle = 0;
-
-    const render = () => {
-      mouse.x += (mouse.targetX - mouse.x) * 0.05;
-      mouse.y += (mouse.targetY - mouse.y) * 0.05;
-
-      ctx.fillStyle = '#040406';
-      ctx.fillRect(0, 0, width, height);
-
-      // Draw stars
-      stars.forEach(star => {
-        ctx.fillStyle = `rgba(240, 240, 245, ${star.alpha})`;
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-        ctx.fill();
-        star.alpha += (Math.random() - 0.5) * 0.05;
-        if (star.alpha < 0.1) star.alpha = 0.1;
-        if (star.alpha > 1) star.alpha = 1;
-      });
-
-      // Gravitational Core / Black Hole Center
-      const centerX = width / 2 + (mouse.x - width / 2) * 0.05;
-      const centerY = height / 2 + (mouse.y - height / 2) * 0.05;
-
-      // Outer glow / accretion disk rings
-      angle += 0.015;
-      ctx.save();
-      ctx.translate(centerX, centerY);
-
-      // Draw multiple gravitational rings
-      for (let r = 60; r < 220; r += 25) {
-        ctx.beginPath();
-        ctx.strokeStyle = `rgba(125, 155, 255, ${0.15 - r / 1500})`;
-        ctx.lineWidth = r > 150 ? 1 : 2;
-        ctx.ellipse(0, 0, r * 1.8, r * 0.6, angle + r * 0.002, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-
-      // Bright accretion flare
-      const gradient = ctx.createRadialGradient(0, 0, 10, 0, 0, 180);
-      gradient.addColorStop(0, 'rgba(4, 4, 6, 1)');
-      gradient.addColorStop(0.4, 'rgba(125, 155, 255, 0.25)');
-      gradient.addColorStop(0.8, 'rgba(59, 130, 246, 0.1)');
-      gradient.addColorStop(1, 'transparent');
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(0, 0, 180, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Event horizon core (pure black with subtle blue rim)
-      ctx.beginPath();
-      ctx.arc(0, 0, 45, 0, Math.PI * 2);
-      ctx.fillStyle = '#000000';
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(125, 155, 255, 0.8)';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      ctx.restore();
-
-      animationFrameId = requestAnimationFrame(render);
-    };
-
-    render();
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(animationFrameId);
-    };
+    const interval = window.setInterval(() => setSignal((value) => (value + 1) % 5), 2400);
+    return () => window.clearInterval(interval);
   }, []);
 
-  // Handle terminal command execution
-  const handleTerminalSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!terminalInput.trim()) return;
-
-    const cmd = terminalInput.trim().toLowerCase();
-    const newLogs = [...terminalLogs, `> ${terminalInput}`];
-
-    if (cmd === 'help') {
-      newLogs.push('Available commands: status, reboot, matrix, clear, scan, core, contact');
-    } else if (cmd === 'status') {
-      newLogs.push('STATUS: ALL SYSTEMS NOMINAL. 144 FPS. CORE STABLE. MEMORY 98%.');
-    } else if (cmd === 'reboot') {
-      newLogs.push('Rebooting neural substrate... Synchronizing quantum nodes...');
-      setTimeout(() => {
-        setTerminalLogs(prev => [...prev, 'REBOOT COMPLETE. Core integrity at 100%.']);
-      }, 1000);
-    } else if (cmd === 'clear') {
-      setTerminalLogs(['NOIACORE KERNEL v4.2.0 OMEGA INITIALIZED.']);
-      setTerminalInput('');
+  const submitIntent = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!intent.trim()) {
+      toast('Escribe una intención para abrir el campo de exploración.');
       return;
-    } else if (cmd === 'matrix') {
-      newLogs.push('Entering cognitive matrix... Visualizing multidimensional states.');
-      toast('Matrix mode activated!');
-    } else if (cmd === 'core') {
-      newLogs.push('CORE IS INVISIBLE. IMPACT IS INVETABLE.');
-    } else {
-      newLogs.push(`Command not recognized: "${cmd}". Type "help" for instructions.`);
     }
-
-    setTerminalLogs(newLogs);
-    setTerminalInput('');
+    onIntent(intent.trim());
+    setIntent('');
   };
 
-  const experiences = [
-    { id: '01', title: 'SILÉNCIO', category: 'UNIVERSO', desc: 'Todo começa no que não se vê.', details: 'Exploración del vacío cuántico y la arquitectura invisible que sostiene la materia digital.' },
-    { id: '02', title: 'PERCEPÇÃO', category: 'LABORATÓRIO', desc: 'O sistema observa. O invisível se revela.', details: 'Sistemas ópticos adaptativos que reaccionan a la dilatación pupilar y la atención ocular.' },
-    { id: '03', title: 'CURIOSIDADE', category: 'PROJETOS', desc: 'Uma pergunta abre o caminho.', details: 'Algoritmos generativos de auto-consulta y motores de razonamiento heurístico.' },
-    { id: '04', title: 'HIPÓTESE', category: 'AGENTES', desc: 'Entendemos a intenção.', details: 'Redes neuronales distribuidas capaces de anticipar necesidades antes de su ejecución.' },
-    { id: '05', title: 'ADAPTAÇÃO', category: 'SISTEMAS', desc: 'O sistema se molda ao que você precisa.', interfaces: true, details: 'Interfaces líquidas que rediseñan su estructura en tiempo real según el contexto del usuario.' },
-    { id: '06', title: 'SISTEMAS', category: 'ARQUITETURA', desc: 'Arquitetura invisível. Resultado inevitável.', details: 'Infraestructura de alto rendimiento con latencia sub-milisegundo y redundancia cuántica.' },
-    { id: '07', title: 'LABORATÓRIO', category: 'EXPERIÊNCIAS', desc: 'Onde ideias se tornam experimentos.', details: 'Entorno de pruebas cerrado para simulación de futuros alternativos y UX cognitivo.' },
-    { id: '08', title: 'CRIAÇÃO', category: 'GÊNESIS', desc: 'Construimos juntos o que ainda não existe.', details: 'Sintetizadores de interfaz y generadores autónomos de código y activos visuales.' },
-    { id: '09', title: 'PROPOSTA', category: 'ESTRATÉGIA', desc: 'A solução feita sob medida para você.', details: 'Consultoría algorítmica y diseño de experiencias a la medida de organizaciones de élite.' },
-    { id: '10', title: 'IMPACTO', category: 'FUTURO', desc: 'Tecnologia que move. Pessoas que transformam.', details: 'Métricas de impacto cognitivo y resonancia emocional a escala global.' }
-  ];
+  return (
+    <section className="hero-section" id="top">
+      <div className="hero-section__image" style={{ backgroundImage: `url(${heroImage})` }} />
+      <div className="hero-section__vignette" />
+      <NeuralCanvas density={210} className="hero-section__canvas" />
+      <div className="hero-section__grid" />
+      <div className="hero-section__coordinates">41°24'12.2"N / 2°10'26.5"E</div>
+      <div className="hero-section__vertical-label hero-section__vertical-label--left">OBSERVE / DISTURB / REPEAT</div>
+      <div className="hero-section__vertical-label hero-section__vertical-label--right">COGNITIVE SYSTEMS / 2026</div>
+
+      <div className="hero-section__topline"><SectionEyebrow index="00" tone="neutral">INTELLIGENCE LABORATORY</SectionEyebrow><span className="hero-section__topline-status"><span className="signal-dot" />LIVE FIELD / 04:22:18</span></div>
+      <div className="hero-section__content">
+        <div className="hero-section__pretitle">A SILENT ARCHITECTURE FOR LOUD IDEAS</div>
+        <h1><span>NOIA</span><span className="hero-section__title-core">C</span><span>ORE</span></h1>
+        <div className="hero-section__subtitle"><span>LAB</span><i /> INTELLIGENCE, DESIGNED TO BECOME EXPERIENCE.</div>
+        <div className="hero-section__intent-wrap">
+          <div className="hero-section__intent-meta"><span>INPUT / YOUR INTENTION</span><span>ADAPTIVE INTERFACE READY</span></div>
+          <form className="hero-intent" onSubmit={submitIntent}>
+            <Search size={17} />
+            <input value={intent} onChange={(event) => setIntent(event.target.value)} placeholder="What are you trying to change?" aria-label="Tu intención" />
+            <button type="submit"><span>OPEN FIELD</span><ArrowUpRight size={16} /></button>
+          </form>
+          <div className="hero-section__intent-foot"><span>Press enter to initiate a signal</span><button type="button" onClick={onTerminal}><TerminalIcon size={13} />or open terminal</button></div>
+        </div>
+      </div>
+      <div className="hero-section__footer">
+        <a href="#lab" className="hero-section__scroll"><span className="hero-section__scroll-icon"><ChevronDown size={14} /></span><span>SCROLL TO ENTER</span></a>
+        <div className="hero-section__signal-card"><div className="hero-section__signal-card-top"><span>ACTIVE SIGNAL</span><span>0{signal + 1} / 05</span></div><strong>{signalFeed[signal].message}</strong><div className="hero-section__signal-progress"><span style={{ width: `${(signal + 1) * 20}%` }} /></div></div>
+        <div className="hero-section__coordinates hero-section__coordinates--bottom">SCROLL 001 / 005</div>
+      </div>
+    </section>
+  );
+}
+
+function TelemetryStrip() {
+  return (
+    <section className="telemetry-strip" aria-label="Telemetría del sistema">
+      <div className="telemetry-strip__inner">
+        <div className="telemetry-intro"><div className="telemetry-intro__label"><Activity size={14} />SYSTEM TELEMETRY</div><p>The core is not a product.<br /><em>It is a way of seeing.</em></p></div>
+        <div className="telemetry-plot" aria-label="Gráfico de señal en vivo">
+          <div className="telemetry-plot__header"><span>RUNTIME / V4.2.0 OMEGA</span><span>SYNCED 99.98%</span></div>
+          <div className="telemetry-plot__waves"><span className="telemetry-plot__wave telemetry-plot__wave--one" /><span className="telemetry-plot__wave telemetry-plot__wave--two" /><span className="telemetry-plot__wave telemetry-plot__wave--three" /></div>
+          <div className="telemetry-plot__footer"><span>FREQUENCY 144HZ</span><span>THROUGHPUT 1.28K</span><span>LATENCY 0.03MS</span></div>
+        </div>
+        <div className="telemetry-metrics">{systemMetrics.slice(0, 3).map((metric) => <MetricBar key={metric.label} {...metric} />)}</div>
+      </div>
+    </section>
+  );
+}
+
+function SignalFeed() {
+  return (
+    <section className="signal-feed-section">
+      <div className="signal-feed-section__heading"><SectionEyebrow index="01" tone="orange">SIGNAL FEED</SectionEyebrow><span className="signal-feed-section__live"><Radio size={13} />LIVE / 05 ACTIVE SIGNALS</span></div>
+      <div className="signal-feed-section__rows">{signalFeed.map((signal) => <SignalRow key={signal.time} {...signal} />)}</div>
+    </section>
+  );
+}
+
+function LabIntro() {
+  return (
+    <section className="lab-intro" id="lab">
+      <div className="lab-intro__side"><span className="lab-intro__side-label">LAB / 01</span><span className="lab-intro__side-line" /><span className="lab-intro__side-label lab-intro__side-label--muted">A PLACE FOR THE UNPROVEN</span></div>
+      <div className="lab-intro__main">
+        <SectionEyebrow index="02" tone="blue">THE NOIA CORE METHOD</SectionEyebrow>
+        <h2>Diseñamos la zona<br /><em>entre la intención</em><br />y el impacto.</h2>
+        <div className="lab-intro__copy"><p>NOIACORE es un laboratorio independiente de sistemas inteligentes, dirección creativa y experiencias que se comportan como organismos. No vendemos interfaces. <strong>Construimos el campo en el que una idea puede volverse inevitable.</strong></p><a href="#manifesto" className="text-link">Read the manifesto <ArrowUpRight size={14} /></a></div>
+      </div>
+      <div className="lab-intro__aside"><div className="lab-intro__orb"><OrbitalMark /><span className="lab-intro__orb-label">CORE / 00</span></div><span className="lab-intro__aside-caption">A SYSTEM THAT<br />OBSERVES BACK.</span></div>
+    </section>
+  );
+}
+
+function ArchitectureSection() {
+  return (
+    <section className="architecture-section" id="systems">
+      <div className="architecture-section__visual"><img src={corridorImage} alt="Pasillo de laboratorio oscuro con una figura ante un núcleo luminoso" loading="lazy" onError={(event) => { event.currentTarget.src = referenceDashboard; }} /><div className="architecture-section__visual-overlay" /><div className="architecture-section__visual-label"><span>ARCHITECTURE / 06</span><strong>THE INVISIBLE<br />MACHINE</strong><span className="architecture-section__visual-coordinates">37.7749° N / 122.4194° W</span></div><div className="architecture-section__visual-crosshair"><Crosshair size={28} /></div></div>
+      <div className="architecture-section__copy"><SectionEyebrow index="03" tone="blue">SYSTEM ARCHITECTURE</SectionEyebrow><h2>Complexity<br /><em>with a pulse.</em></h2><p>La tecnología más sofisticada no necesita parecerlo. Cada capa del sistema debe saber por qué existe, qué protege y cuándo debe desaparecer.</p><div className="architecture-section__stack">{['INTENTION', 'PERCEPTION', 'DECISION', 'EXPRESSION'].map((layer, index) => <div className="architecture-layer" key={layer}><span>0{index + 1}</span><strong>{layer}</strong><i /><small>{index === 0 ? 'human input / context' : index === 1 ? 'pattern recognition' : index === 2 ? 'adaptive intelligence' : 'experience output'}</small></div>)}</div><a className="button-ghost" href="#projects">Explore the architecture <ArrowRight size={15} /></a></div>
+    </section>
+  );
+}
+
+function ProjectsSection({ onOpen }: { onOpen: (module: NoiacoreModule) => void }) {
+  const [activeCategory, setActiveCategory] = useState<'ALL' | ModuleCategory>('ALL');
+  const filtered = useMemo(() => activeCategory === 'ALL' ? modules : modules.filter((module) => module.category === activeCategory), [activeCategory]);
 
   return (
-    <div className="min-h-screen bg-[#040406] text-[#f0f0f5] selection:bg-[#7d9bff] selection:text-[#040406] relative">
-      
-      {/* Scanlines Overlay for Sci-Fi CRT Feel */}
-      <div className="fixed inset-0 pointer-events-none scanlines z-50 opacity-40"></div>
+    <section className="projects-section" id="projects">
+      <div className="projects-section__header"><div><SectionEyebrow index="04" tone="orange">THE MODULES</SectionEyebrow><h2>Ten ways to<br /><em>move the field.</em></h2></div><div className="projects-section__header-aside"><p>Una colección viva de principios, herramientas y experimentos. Abre un módulo para entrar en su lógica interna.</p><span>10 / 10 MODULES ONLINE</span></div></div>
+      <div className="projects-section__filter" role="tablist" aria-label="Filtrar módulos">{categories.map((category) => <button type="button" role="tab" aria-selected={activeCategory === category} key={category} onClick={() => setActiveCategory(category)} className={activeCategory === category ? 'is-active' : ''}>{category}<span>{category === 'ALL' ? '10' : modules.filter((module) => module.category === category).length.toString().padStart(2, '0')}</span></button>)}</div>
+      <div className="projects-section__grid">{filtered.map((module, index) => <ModuleCard key={module.id} module={module} onOpen={onOpen} featured={index === 0 && activeCategory === 'ALL'} />)}</div>
+      <div className="projects-section__footer"><span>SCROLL / DISCOVER / RETURN</span><div className="projects-section__footer-line" /><span>FIELD STATUS: EXPANDING</span></div>
+    </section>
+  );
+}
 
-      {/* Top Header & Navigation */}
-      <header className="fixed top-0 left-0 right-0 z-40 bg-[#040406]/80 backdrop-blur-md border-b border-[#7d9bff]/10 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <a href="#" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-full border border-[#7d9bff]/40 flex items-center justify-center relative overflow-hidden group-hover:border-[#7d9bff] transition-colors">
-              <div className="w-3 h-3 bg-[#7d9bff] rounded-full animate-ping absolute"></div>
-              <div className="w-2 h-2 bg-[#7d9bff] rounded-full"></div>
-            </div>
-            <span className="font-display font-bold tracking-widest text-lg text-white">N O I A C O R E</span>
-          </a>
-          <span className="hidden md:inline-block text-xs font-mono-code px-2 py-1 rounded bg-[#12121c] text-[#7d9bff] border border-[#7d9bff]/20">
-            LAB v4.2.0
-          </span>
-        </div>
+function ReferenceWall() {
+  return (
+    <section className="reference-wall" aria-labelledby="reference-wall-title">
+      <div className="reference-wall__heading"><SectionEyebrow index="05" tone="neutral">VISUAL MEMORY</SectionEyebrow><h2 id="reference-wall-title">The interface<br /><em>remembers.</em></h2><p>Una capa de archivo visual inspirada en los materiales aportados: el sistema estudia imágenes, las deconstruye y las convierte en ritmo.</p></div>
+      <div className="reference-wall__mosaic"><figure className="reference-wall__figure reference-wall__figure--large"><img src={referenceGrid} alt="Referencia visual aportada: catálogo modular de NOIACORE LAB" loading="lazy" /><figcaption><span>USER REFERENCE / 01</span><span>GRID / MEMORY</span></figcaption></figure><figure className="reference-wall__figure reference-wall__figure--small"><img src={referenceDashboard} alt="Referencia visual aportada: dashboard inmersivo de NOIACORE LAB" loading="lazy" /><figcaption><span>USER REFERENCE / 02</span><span>HUD / SYSTEMS</span></figcaption></figure><div className="reference-wall__quote"><span>“</span><p>La interfaz no debe explicar el futuro. Debe hacer que el usuario lo sienta antes de poder nombrarlo.</p><small>— NOIA CORE FIELD NOTE / 04</small></div></div>
+    </section>
+  );
+}
 
-        {/* Desktop Nav */}
-        <nav className="hidden lg:flex items-center gap-8 text-xs font-mono-code text-zinc-400">
-          <a href="#lab" className="hover:text-[#7d9bff] transition-colors">LAB</a>
-          <a href="#sistemas" className="hover:text-[#7d9bff] transition-colors">SISTEMAS</a>
-          <a href="#projetos" className="hover:text-[#7d9bff] transition-colors">PROJETOS</a>
-          <a href="#experiencia" className="hover:text-[#7d9bff] transition-colors">EXPERIÊNCIA</a>
-          <a href="#contato" className="hover:text-[#7d9bff] transition-colors">CONTATO</a>
-        </nav>
+function AgentsSection() {
+  return (
+    <section className="agents-section" id="agents">
+      <div className="agents-section__image"><img src={neuralAtlas} alt="Perfil humano formado por partículas y conexiones neuronales" loading="lazy" onError={(event) => { event.currentTarget.src = referenceGrid; }} /><div className="agents-section__image-overlay" /><span className="agents-section__image-label">AGENTS / PERCEPTION FIELD</span></div>
+      <div className="agents-section__copy"><SectionEyebrow index="06" tone="orange">AUTONOMOUS AGENTS</SectionEyebrow><h2>Questions are<br /><em>the interface.</em></h2><p>Los agentes que diseñamos no sustituyen el criterio humano. Lo amplifican. Observan el contexto, abren posibilidades y hacen visible la siguiente decisión.</p><div className="agents-section__stats"><div><strong>12.4K</strong><span>ACTIVE NODES</span></div><div><strong>0.03</strong><span>MS RESPONSE</span></div><div><strong>99.8%</strong><span>CONTEXT LOCK</span></div></div><button className="button-solid" type="button" onClick={() => toast('Agent field unlocked. Explore the modules to continue.')}>Open agent field <ArrowUpRight size={16} /></button></div>
+    </section>
+  );
+}
 
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={() => setTerminalOpen(true)}
-            className="flex items-center gap-2 text-xs font-mono-code px-3 py-1.5 rounded bg-[#12121c] hover:bg-[#1a1a2e] text-[#7d9bff] border border-[#7d9bff]/30 transition-all"
-            title="Abrir Terminal"
-          >
-            <TerminalIcon className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">TERMINAL</span>
-          </button>
+function ManifestoSection() {
+  const statements = ['WE OBSERVE BEFORE WE BUILD.', 'WE MAKE COMPLEXITY FEEL INEVITABLE.', 'WE DESIGN FOR THE MOMENT AFTER THE CLICK.', 'WE LEAVE SPACE FOR THE UNEXPECTED.'];
+  return (
+    <section className="manifesto-section" id="manifesto">
+      <NeuralCanvas density={90} className="manifesto-section__canvas" />
+      <div className="manifesto-section__inner"><SectionEyebrow index="07" tone="blue">THE MANIFESTO</SectionEyebrow><div className="manifesto-section__heading"><span>NOIA / CORE / 2026</span><h2>Intelligence<br /><em>should feel alive.</em></h2></div><div className="manifesto-section__statements">{statements.map((statement, index) => <div className="manifesto-statement" key={statement}><span>0{index + 1}</span><p>{statement}</p><ArrowUpRight size={18} /></div>)}</div><div className="manifesto-section__bottom"><span>THE CORE IS INVISIBLE.</span><span>THE IMPACT IS INEVITABLE.</span></div></div>
+    </section>
+  );
+}
 
-          <button 
-            onClick={() => setAudioActive(!audioActive)}
-            className="p-2 rounded bg-[#12121c] hover:bg-[#1a1a2e] text-zinc-400 hover:text-white border border-white/10 transition-colors"
-            title="Alternar Audio Sintonizado"
-          >
-            {audioActive ? <Volume2 className="w-4 h-4 text-[#7d9bff]" /> : <VolumeX className="w-4 h-4" />}
-          </button>
+function ContactSection({ onTerminal }: { onTerminal: () => void }) {
+  return (
+    <section className="contact-section" id="contact">
+      <div className="contact-section__top"><SectionEyebrow index="08" tone="orange">NEXT TRANSMISSION</SectionEyebrow><span className="contact-section__status"><span />AVAILABLE FOR SELECTIVE COLLABORATIONS</span></div>
+      <div className="contact-section__main"><div><h2>What are you<br /><em>ready to make inevitable?</em></h2><p>Cuéntanos qué está intentando cambiar tu sistema. El primer contacto no es un formulario: es una señal.</p></div><div className="contact-section__actions"><a className="button-solid button-solid--large" href="mailto:hello@noiacore.lab">Initiate collaboration <ArrowUpRight size={17} /></a><button className="button-ghost" type="button" onClick={onTerminal}><TerminalIcon size={15} /> Enter the console</button></div></div>
+      <div className="contact-section__orbital"><OrbitalMark /><span>OPEN CHANNEL / 2026</span></div>
+    </section>
+  );
+}
 
-          <button 
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded bg-[#12121c] text-zinc-400 hover:text-white border border-white/15"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
-      </header>
+function Footer() {
+  return (
+    <footer className="site-footer"><div className="site-footer__top"><div className="site-footer__identity"><div className="site-footer__mark"><OrbitalMark small /></div><span className="site-header__wordmark">N<span>O</span>IACORE</span><p>Intelligence, designed to become experience.</p></div><div className="site-footer__links"><div><span>EXPLORE</span><a href="#lab">The method</a><a href="#projects">The modules</a><a href="#manifesto">The manifesto</a></div><div><span>CONNECT</span><a href="mailto:hello@noiacore.lab">Email channel</a><a href="#contact">Collaboration</a><a href="#top">Back to top</a></div><div><span>LEGAL</span><a href="#contact">Privacy field</a><a href="#contact">Terms of signal</a></div></div></div><div className="site-footer__bottom"><span>© NOIACORE LAB / 2026</span><span>BUILT FOR MINDS THAT THINK DIFFERENTLY</span><span>41°24'12.2"N / 2°10'26.5"E</span></div></footer>
+  );
+}
 
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-30 bg-[#040406]/95 backdrop-blur-xl pt-24 px-6 flex flex-col gap-6 lg:hidden">
-          <nav className="flex flex-col gap-4 text-lg font-mono-code">
-            <a href="#lab" onClick={() => setMobileMenuOpen(false)} className="text-zinc-300 hover:text-[#7d9bff]">01. LAB</a>
-            <a href="#sistemas" onClick={() => setMobileMenuOpen(false)} className="text-zinc-300 hover:text-[#7d9bff]">02. SISTEMAS</a>
-            <a href="#projetos" onClick={() => setMobileMenuOpen(false)} className="text-zinc-300 hover:text-[#7d9bff]">03. PROJETOS</a>
-            <a href="#experiencia" onClick={() => setMobileMenuOpen(false)} className="text-zinc-300 hover:text-[#7d9bff]">04. EXPERIÊNCIA</a>
-            <a href="#contato" onClick={() => setMobileMenuOpen(false)} className="text-zinc-300 hover:text-[#7d9bff]">05. CONTATO</a>
-          </nav>
-          <div className="pt-6 border-t border-white/10">
-            <button 
-              onClick={() => { setTerminalOpen(true); setMobileMenuOpen(false); }}
-              className="w-full py-3 bg-[#12121c] text-[#7d9bff] border border-[#7d9bff]/30 rounded font-mono-code flex items-center justify-center gap-2"
-            >
-              <TerminalIcon className="w-4 h-4" /> ABRIR CONSOLE DE TERMINAL
-            </button>
-          </div>
-        </div>
-      )}
+function ModuleModal({ module, onClose }: { module: NoiacoreModule; onClose: () => void }) {
+  return (
+    <div className="module-modal" role="dialog" aria-modal="true" aria-labelledby="module-modal-title">
+      <div className="module-modal__backdrop" onClick={onClose} />
+      <div className="module-modal__panel">
+        <button type="button" className="module-modal__close" onClick={onClose} aria-label="Cerrar módulo"><X size={18} /></button>
+        <div className="module-modal__media"><img src={module.image} alt="" /><div className="module-modal__media-overlay" /><span>{module.index} / {module.category}</span></div>
+        <div className="module-modal__content"><SectionEyebrow index={module.index} tone={module.tone === 'orange' ? 'orange' : 'blue'}>{module.label}</SectionEyebrow><h2 id="module-modal-title">{module.title}<em>{module.signal}</em></h2><p>{module.description}</p><div className="module-modal__tags">{module.tags.map((tag) => <span key={tag}>#{tag}</span>)}</div><div className="module-modal__metric"><span>LIVE METRIC</span><strong>{module.metric}</strong><small>{module.metricLabel}</small></div><button type="button" className="button-solid" onClick={() => { toast(`${module.title.toUpperCase()} / sequence initiated`); onClose(); }}>Initiate sequence <ArrowUpRight size={16} /></button></div>
+      </div>
+    </div>
+  );
+}
 
-      {/* HERO SECTION WITH WEBGL GRAVITATIONAL LENSING */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 overflow-hidden">
-        {/* Background Canvas */}
-        <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-auto" />
+export default function Home() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [terminalOpen, setTerminalOpen] = useState(false);
+  const [selectedModule, setSelectedModule] = useState<NoiacoreModule | null>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [systemPulse, setSystemPulse] = useState(0);
 
-        {/* Ambient Gradient Vignette */}
-        <div className="absolute inset-0 bg-radial from-transparent via-[#040406]/60 to-[#040406] pointer-events-none"></div>
+  useEffect(() => {
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(max > 0 ? Math.min(100, Math.round((window.scrollY / max) * 100)) : 0);
+    };
+    const timer = window.setInterval(() => setSystemPulse((value) => (value + 1) % 100), 1300);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => { window.removeEventListener('scroll', onScroll); window.clearInterval(timer); };
+  }, []);
 
-        {/* Hero Content */}
-        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto flex flex-col items-center mt-12">
-          <div className="text-xs font-mono-code tracking-[0.3em] text-[#7d9bff] mb-6 uppercase border border-[#7d9bff]/30 px-4 py-1.5 rounded-full bg-[#7d9bff]/5 backdrop-blur-sm animate-pulse">
-            CORE IS INVISIBLE. IMPACT IS INEVITABLE.
-          </div>
+  const handleIntent = (value: string) => {
+    toast(`FIELD OPEN / processing “${value}”`);
+    window.setTimeout(() => document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' }), 280);
+  };
 
-          <h1 className="font-display font-light text-5xl sm:text-7xl md:text-8xl tracking-tight text-white mb-6">
-            N O I A C O R E
-          </h1>
-
-          <p className="text-sm sm:text-base font-mono-code tracking-widest text-zinc-400 mb-10 max-w-2xl">
-            INTELIGÊNCIA SILENCIOSA. TECNOLOGIA ESSENCIAL.
-          </p>
-
-          {/* Central Intent Input Bar (Dopamine Trigger) */}
-          <div className="w-full max-w-xl relative group mb-12">
-            <div className="absolute -inset-1 bg-gradient-to-r from-[#7d9bff] to-[#3b82f6] rounded-xl blur opacity-30 group-hover:opacity-75 transition duration-500"></div>
-            <div className="relative flex items-center bg-[#0a0a0f] border border-[#7d9bff]/30 rounded-xl p-2 shadow-2xl">
-              <Search className="w-5 h-5 text-[#7d9bff] ml-3 mr-2" />
-              <input 
-                type="text" 
-                value={intentQuery}
-                onChange={(e) => setIntentQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && intentQuery.trim()) {
-                    toast(`Iniciando simulación para: "${intentQuery}"`);
-                    setIntentQuery('');
-                  }
-                }}
-                placeholder="¿Qué intentas cambiar hoy?" 
-                className="w-full bg-transparent text-white placeholder-zinc-500 text-sm focus:outline-none font-mono-code px-2"
-              />
-              <button 
-                onClick={() => {
-                  if (intentQuery.trim()) {
-                    toast(`Procesando intención cognitiva...`);
-                    setIntentQuery('');
-                  } else {
-                    toast('Por favor, escribe tu intención de cambio.');
-                  }
-                }}
-                className="bg-[#7d9bff] hover:bg-[#6886e6] text-[#040406] px-4 py-2 rounded-lg font-mono-code text-xs font-bold transition-all flex items-center gap-1"
-              >
-                <span>EJECUTAR</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-            <div className="text-[10px] font-mono-code text-zinc-500 mt-2">
-              LA INTERFAZ SE ADAPTARÁ A TU RESPUESTA EN TIEMPO REAL
-            </div>
-          </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-zinc-500 font-mono-code text-[10px] tracking-widest">
-          <span>SCROLL PARA INICIAR</span>
-          <div className="w-4 h-8 rounded-full border border-zinc-700 flex items-start justify-center p-1">
-            <div className="w-1 h-2 bg-[#7d9bff] rounded-full animate-bounce"></div>
-          </div>
-        </div>
-      </section>
-
-      {/* SIDEBAR & QUICK STATS HUD (Inspired by Reference) */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-4 gap-6">
-        
-        {/* Left Side Navigation Quick Widget */}
-        <div className="lg:col-span-1 bg-[#0a0a0f] border border-[#7d9bff]/15 rounded-xl p-6 flex flex-col justify-between">
-          <div>
-            <div className="text-xs font-mono-code text-[#7d9bff] mb-4 flex items-center gap-2">
-              <Compass className="w-4 h-4" /> NAVEGACIÓN ACTIVA
-            </div>
-            <ul className="space-y-3 font-mono-code text-xs text-zinc-400">
-              <li>
-                <a href="#lab" className="hover:text-[#7d9bff] flex items-center justify-between py-1 border-b border-white/5">
-                  <span>01. UNIVERSO</span>
-                  <span className="text-[10px] text-zinc-600">ONLINE</span>
-                </a>
-              </li>
-              <li>
-                <a href="#sistemas" className="hover:text-[#7d9bff] flex items-center justify-between py-1 border-b border-white/5">
-                  <span>02. LABORATORIO</span>
-                  <span className="text-[10px] text-emerald-400">ACTIVO</span>
-                </a>
-              </li>
-              <li>
-                <a href="#projetos" className="hover:text-[#7d9bff] flex items-center justify-between py-1 border-b border-white/5">
-                  <span>03. PROJETOS</span>
-                  <span className="text-[10px] text-zinc-600">12 MÓDULOS</span>
-                </a>
-              </li>
-              <li>
-                <a href="#agentes" className="hover:text-[#7d9bff] flex items-center justify-between py-1 border-b border-white/5">
-                  <span>04. AGENTES</span>
-                  <span className="text-[10px] text-zinc-600">SINCRONIZADO</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div className="mt-8 pt-4 border-t border-white/10">
-            <div className="text-[10px] font-mono-code text-zinc-500">ESTADO DEL NÚCLEO</div>
-            <div className="text-xs text-emerald-400 font-mono-code flex items-center gap-1.5 mt-1">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-              <span>ESTABLE (99.98%)</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Center Main Metric Dashboard */}
-        <div className="lg:col-span-2 bg-[#0a0a0f] border border-[#7d9bff]/15 rounded-xl p-6 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-xs font-mono-code text-[#7d9bff] flex items-center gap-2">
-                <Activity className="w-4 h-4" /> TELEMETRÍA EN VIVO — RUNTIME v4.2.0
-              </div>
-              <span className="text-[10px] font-mono-code text-zinc-500">LATENCIA: 0.3ms</span>
-            </div>
-            
-            {/* Simulated Audio Waveform Canvas / SVG */}
-            <div className="h-28 w-full bg-[#040406] rounded-lg border border-white/10 relative overflow-hidden flex items-center justify-center p-2 mb-6">
-              <div className="absolute inset-0 flex items-center justify-around opacity-40">
-                {[...Array(32)].map((_, i) => (
-                  <div 
-                    key={i} 
-                    className="w-1 bg-[#7d9bff] rounded-full animate-pulse" 
-                    style={{ 
-                      height: `${Math.sin(i * 0.5) * 40 + 50}%`,
-                      animationDuration: `${0.5 + (i % 5) * 0.2}s`
-                    }}
-                  ></div>
-                ))}
-              </div>
-              <div className="relative z-10 text-center font-mono-code text-xs text-[#7d9bff] tracking-widest bg-[#040406]/80 px-4 py-1.5 rounded border border-[#7d9bff]/30">
-                TRANSMISIÓN CUÁNTICA ACTIVA
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4 text-center font-mono-code">
-              <div className="bg-[#12121c] p-3 rounded-lg border border-white/5">
-                <div className="text-[10px] text-zinc-500">FPS</div>
-                <div className="text-lg font-bold text-white mt-0.5">{fps}</div>
-              </div>
-              <div className="bg-[#12121c] p-3 rounded-lg border border-white/5">
-                <div className="text-[10px] text-zinc-500">NODOS</div>
-                <div className="text-lg font-bold text-[#7d9bff] mt-0.5">{nodes}</div>
-              </div>
-              <div className="bg-[#12121c] p-3 rounded-lg border border-white/5">
-                <div className="text-[10px] text-zinc-500">PROCESOS</div>
-                <div className="text-lg font-bold text-[#ff9e5a] mt-0.5">256</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Side System Stats Bars */}
-        <div className="lg:col-span-1 bg-[#0a0a0f] border border-[#7d9bff]/15 rounded-xl p-6 flex flex-col justify-between">
-          <div>
-            <div className="text-xs font-mono-code text-[#7d9bff] mb-4 flex items-center gap-2">
-              <Shield className="w-4 h-4" /> RECURSOS DE SISTEMA
-            </div>
-            
-            <div className="space-y-4 font-mono-code text-xs">
-              <div>
-                <div className="flex justify-between text-zinc-400 mb-1">
-                  <span>MEMORIA</span>
-                  <span className="text-white">98%</span>
-                </div>
-                <div className="w-full bg-[#12121c] h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-[#7d9bff] h-full w-[98%]"></div>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between text-zinc-400 mb-1">
-                  <span>APRENDIZAJE</span>
-                  <span className="text-white">73%</span>
-                </div>
-                <div className="w-full bg-[#12121c] h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-[#3b82f6] h-full w-[73%]"></div>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between text-zinc-400 mb-1">
-                  <span>ADAPTACIÓN</span>
-                  <span className="text-white">91%</span>
-                </div>
-                <div className="w-full bg-[#12121c] h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-emerald-400 h-full w-[91%]"></div>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between text-zinc-400 mb-1">
-                  <span>CREATIVIDAD</span>
-                  <span className="text-white">87%</span>
-                </div>
-                <div className="w-full bg-[#12121c] h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-[#ff9e5a] h-full w-[87%]"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
-            <span className="text-[10px] font-mono-code text-zinc-500">MODO SEGURO</span>
-            <span className="text-[10px] font-mono-code text-emerald-400">ACTIVADO</span>
-          </div>
-        </div>
-
-      </section>
-
-      {/* 10 EXPERIENCES GRID (Award-Winning Layout Inspired by Reference) */}
-      <section id="lab" className="max-w-7xl mx-auto px-6 py-16">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-white/10 pb-6">
-          <div>
-            <div className="text-xs font-mono-code text-[#7d9bff] mb-2 tracking-widest">CATÁLOGO DE EXPERIENCIAS</div>
-            <h2 className="font-display text-3xl sm:text-4xl font-light text-white">Sistemas Inmersivos y Módulos</h2>
-          </div>
-          <div className="mt-4 md:mt-0 flex gap-2 font-mono-code text-xs">
-            {['all', 'systems', 'projects', 'agents', 'lab'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab as any)}
-                className={`px-3 py-1.5 rounded border transition-all ${
-                  activeTab === tab 
-                    ? 'bg-[#7d9bff] text-[#040406] border-[#7d9bff] font-bold' 
-                    : 'bg-[#0a0a0f] text-zinc-400 border-white/10 hover:border-[#7d9bff]/40'
-                }`}
-              >
-                {tab.toUpperCase()}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Grid of 10 Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {experiences.map((exp, idx) => (
-            <div 
-              key={exp.id}
-              onClick={() => setSelectedExperience(exp)}
-              className={`group relative bg-[#0a0a0f] border border-[#7d9bff]/15 rounded-xl p-6 hover:border-[#7d9bff]/60 transition-all duration-300 cursor-pointer flex flex-col justify-between min-h-[220px] overflow-hidden ${
-                idx === 0 || idx === 7 ? 'md:col-span-2' : ''
-              }`}
-            >
-              {/* Subtle background glow on hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#7d9bff]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="font-mono-code text-xs text-[#7d9bff] font-bold">{exp.id}</span>
-                  <span className="font-mono-code text-[10px] tracking-wider text-zinc-500 uppercase px-2 py-0.5 bg-[#12121c] rounded border border-white/5">
-                    {exp.category}
-                  </span>
-                </div>
-                <h3 className="font-display text-xl font-normal text-white group-hover:text-[#7d9bff] transition-colors mb-2">
-                  {exp.title}
-                </h3>
-                <p className="font-sans text-xs text-zinc-400 line-clamp-2">
-                  {exp.desc}
-                </p>
-              </div>
-
-              <div className="pt-6 mt-4 border-t border-white/5 flex items-center justify-between text-xs font-mono-code text-zinc-500 group-hover:text-white transition-colors">
-                <span>EXPLORAR MÓDULO</span>
-                <ArrowUpRight className="w-4 h-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-[#7d9bff]" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* QUICK ACCESS TOOLS SECTION */}
-      <section id="sistemas" className="max-w-7xl mx-auto px-6 py-16 border-t border-white/10">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <div className="text-xs font-mono-code text-[#7d9bff] mb-2">HERRAMIENTAS DE ÉLITE</div>
-          <h2 className="font-display text-3xl font-light text-white">Acceso Rápido al Ecosistema</h2>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 font-mono-code">
-          {[
-            { name: 'DOCUMENTACIÓN', icon: Layers, action: () => toast('Abriendo especificaciones técnicas...') },
-            { name: 'TERMINAL', icon: TerminalIcon, action: () => setTerminalOpen(true) },
-            { name: 'EDITOR 3D', icon: Box, action: () => toast('Cargando motor WebGL 3D...') },
-            { name: 'SHADER LAB', icon: Sparkles, action: () => toast('Inicializando laboratorio de shaders GLSL...') },
-            { name: 'BASE DE DATOS', icon: Database, action: () => toast('Conectando con almacenamiento cuántico...') },
-            { name: 'IA CORE', icon: Cpu, action: () => toast('Sincronizando con modelo cognitivo principal...') },
-          ].map((tool, i) => {
-            const Icon = tool.icon;
-            return (
-              <button 
-                key={i}
-                onClick={tool.action}
-                className="bg-[#0a0a0f] border border-[#7d9bff]/15 hover:border-[#7d9bff] rounded-xl p-5 flex flex-col items-center text-center gap-3 transition-all group"
-              >
-                <div className="w-10 h-10 rounded-lg bg-[#12121c] border border-white/10 flex items-center justify-center text-[#7d9bff] group-hover:bg-[#7d9bff] group-hover:text-[#040406] transition-colors">
-                  <Icon className="w-5 h-5" />
-                </div>
-                <span className="text-xs text-zinc-300 group-hover:text-white">{tool.name}</span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer id="contato" className="bg-[#020204] border-t border-white/10 py-16 px-6 mt-20 font-mono-code text-xs">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-          <div>
-            <div className="font-display font-bold text-white text-base tracking-widest mb-4">N O I A C O R E</div>
-            <p className="text-zinc-500 text-[11px] leading-relaxed">
-              Diseñado para mentes que piensan diferente. Experiencias web galardonadas y sistemas autónomos de inteligencia inmersiva.
-            </p>
-          </div>
-          <div>
-            <div className="text-[#7d9bff] font-bold mb-3">SISTEMAS</div>
-            <ul className="space-y-2 text-zinc-400">
-              <li><a href="#" className="hover:text-white">Núcleo Cuántico</a></li>
-              <li><a href="#" className="hover:text-white">Red Neuronal</a></li>
-              <li><a href="#" className="hover:text-white">Shader Engine</a></li>
-            </ul>
-          </div>
-          <div>
-            <div className="text-[#7d9bff] font-bold mb-3">LEGAL</div>
-            <ul className="space-y-2 text-zinc-400">
-              <li><a href="#" className="hover:text-white">Privacidad</a></li>
-              <li><a href="#" className="hover:text-white">Términos de Servicio</a></li>
-              <li><a href="#" className="hover:text-white">Manifiesto</a></li>
-            </ul>
-          </div>
-          <div>
-            <div className="text-[#7d9bff] font-bold mb-3">FUNDADOR</div>
-            <p className="text-zinc-400 text-[11px] mb-2">BELENTANI</p>
-            <p className="text-zinc-600 text-[10px]">Arquitecto de Inteligencia</p>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between text-zinc-600 text-[10px]">
-          <div>© NOIACORE LAB 2026. TODOS LOS DERECHOS RESERVADOS.</div>
-          <div className="mt-2 sm:mt-0">DISEÑADO PARA PREMIOS INTERNACIONALES DE EXCELENCIA.</div>
-        </div>
-      </footer>
-
-      {/* TERMINAL MODAL */}
-      {terminalOpen && (
-        <div className="fixed inset-0 z-50 bg-[#040406]/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0a0a0f] border border-[#7d9bff]/40 w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden flex flex-col h-[450px]">
-            {/* Terminal Header */}
-            <div className="bg-[#12121c] px-4 py-3 border-b border-[#7d9bff]/20 flex items-center justify-between">
-              <div className="flex items-center gap-2 font-mono-code text-xs text-[#7d9bff]">
-                <TerminalIcon className="w-4 h-4" />
-                <span>NOIACORE TERMINAL v4.2.0</span>
-              </div>
-              <button 
-                onClick={() => setTerminalOpen(false)}
-                className="text-zinc-400 hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Terminal Logs */}
-            <div className="flex-1 p-4 font-mono-code text-xs overflow-y-auto space-y-2 bg-[#040406]">
-              {terminalLogs.map((log, index) => (
-                <div key={index} className={log.startsWith('>') ? 'text-[#7d9bff]' : 'text-zinc-300'}>
-                  {log}
-                </div>
-              ))}
-            </div>
-
-            {/* Terminal Input */}
-            <form onSubmit={handleTerminalSubmit} className="p-3 bg-[#0a0a0f] border-t border-[#7d9bff]/20 flex items-center gap-2">
-              <span className="text-[#7d9bff] font-mono-code text-xs">&gt;</span>
-              <input 
-                type="text" 
-                value={terminalInput}
-                onChange={(e) => setTerminalInput(e.target.value)}
-                placeholder="Escribe un comando (ej. help, status, reboot)..."
-                className="w-full bg-transparent text-white font-mono-code text-xs focus:outline-none placeholder-zinc-600"
-                autoFocus
-              />
-              <button type="submit" className="text-xs font-mono-code bg-[#7d9bff] text-[#040406] px-3 py-1 rounded font-bold">
-                ENVIAR
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* EXPERIENCE DETAIL MODAL */}
-      {selectedExperience && (
-        <div className="fixed inset-0 z-50 bg-[#040406]/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0a0a0f] border border-[#7d9bff]/40 w-full max-w-xl rounded-xl shadow-2xl p-6 relative">
-            <button 
-              onClick={() => setSelectedExperience(null)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="flex items-center gap-2 font-mono-code text-xs text-[#7d9bff] mb-2">
-              <span>MÓDULO {selectedExperience.id}</span>
-              <span>/</span>
-              <span className="uppercase">{selectedExperience.category}</span>
-            </div>
-
-            <h3 className="font-display text-2xl font-normal text-white mb-4">
-              {selectedExperience.title}
-            </h3>
-
-            <p className="font-sans text-sm text-zinc-300 mb-6 leading-relaxed">
-              {selectedExperience.details}
-            </p>
-
-            <div className="bg-[#12121c] p-4 rounded-lg border border-white/5 font-mono-code text-xs text-zinc-400 mb-6">
-              <div>ESTADO: EN EJECUCIÓN CONTINUA</div>
-              <div>PROTOCOLO: COGNITIVE_SYNC_v2</div>
-            </div>
-
-            <div className="flex justify-end gap-3">
-              <button 
-                onClick={() => setSelectedExperience(null)}
-                className="px-4 py-2 rounded bg-[#12121c] hover:bg-[#1a1a2e] text-zinc-300 font-mono-code text-xs border border-white/10"
-              >
-                CERRAR
-              </button>
-              <button 
-                onClick={() => {
-                  toast(`Módulo ${selectedExperience.title} sincronizado con éxito.`);
-                  setSelectedExperience(null);
-                }}
-                className="px-4 py-2 rounded bg-[#7d9bff] hover:bg-[#6886e6] text-[#040406] font-mono-code text-xs font-bold"
-              >
-                INICIAR SECUENCIA
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
+  return (
+    <div className="noiacore-app">
+      <div className="noise-layer" aria-hidden="true" />
+      <div className="scanline-layer" aria-hidden="true" />
+      <div className="scroll-rail" aria-hidden="true"><span style={{ height: `${Math.max(scrollProgress, 3)}%` }} /><small>{String(scrollProgress).padStart(3, '0')}</small></div>
+      <Header onTerminal={() => setTerminalOpen(true)} onMenu={() => setMenuOpen((open) => !open)} menuOpen={menuOpen} />
+      <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} onTerminal={() => { setMenuOpen(false); setTerminalOpen(true); }} />
+      <main>
+        <HeroSection onTerminal={() => setTerminalOpen(true)} onIntent={handleIntent} />
+        <TelemetryStrip />
+        <SignalFeed />
+        <LabIntro />
+        <ArchitectureSection />
+        <ProjectsSection onOpen={setSelectedModule} />
+        <ReferenceWall />
+        <AgentsSection />
+        <section className="runtime-section"><div className="runtime-section__heading"><SectionEyebrow index="09" tone="neutral">RUNTIME / SYSTEM OBSERVATION</SectionEyebrow><span>NODE HEALTH / {String(systemPulse).padStart(2, '0')}%</span></div><div className="runtime-section__grid"><div className="runtime-card runtime-card--large"><div className="runtime-card__top"><span><Gauge size={15} /> THROUGHPUT</span><strong>1,284<span> nodes</span></strong></div><div className="runtime-card__bars">{Array.from({ length: 42 }, (_, index) => <span key={index} style={{ height: `${20 + ((index * 17) % 75)}%`, animationDelay: `${index * 0.03}s` }} />)}</div><div className="runtime-card__bottom"><span>LIVE FIELD</span><span>144 FPS</span><span>0.03MS LATENCY</span></div></div><div className="runtime-card runtime-card--image"><img src={orbitImage} alt="Anillo orbital azul sobre una superficie reflectante" loading="lazy" onError={(event) => { event.currentTarget.src = referenceDashboard; }} /><div><span>CORE / ORBIT</span><strong>Field is stable.</strong></div></div><div className="runtime-card runtime-card--code"><div className="runtime-card__code-head"><span><span className="code-dot code-dot--blue" /> <span className="code-dot code-dot--orange" /> <span className="code-dot code-dot--white" /></span><span>core.observe.ts</span></div><pre><code>{`const intention = observe(context)\nconst signal = core.translate(intention)\n\nif (signal.ready) {\n  experience.open(signal)\n}`}</code></pre><span className="runtime-card__code-status"><Check size={13} /> compiled / 0 errors</span></div></div></section>
+        <ManifestoSection />
+        <ContactSection onTerminal={() => setTerminalOpen(true)} />
+      </main>
+      <Footer />
+      {terminalOpen && <TerminalPanel onClose={() => setTerminalOpen(false)} />}
+      {selectedModule && <ModuleModal module={selectedModule} onClose={() => setSelectedModule(null)} />}
     </div>
   );
 }

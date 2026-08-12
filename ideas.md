@@ -32,3 +32,7 @@
   - Ejemplo 2: "Iniciando secuencia de armonización cognitiva..."
 - **Wordmark & Logo:** Logotipo vectorial minimalista con un núcleo concéntrico y anillos orbitales.
 - **Signature Brand Color:** Azul Eléctrico Cuántico (`#7d9bff`).
+
+## Style Decisions
+
+The concentric-core/orbital glyph repeats across hero, navigation, footer and key system panels so NOIACORE is remembered by symbol as much as by wordmark. Electric blue `#7d9bff` remains the primary intelligence signal; warm orange `#ff9e5a` is reserved for anomaly, alert, overload and irreversible-impact moments. The page rhythm alternates between cinematic voids, monumental cryptic statements and dense HUD telemetry clusters, so the experience behaves like a living cognitive control system rather than a standard studio page. All fallbacks preserve the same visual language when generated assets are temporarily unavailable.

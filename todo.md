@@ -1,0 +1,29 @@
+# Plan de Trabajo Detallado — NOIACORE LAB (Award Level)
+
+## Fase 1: Auditoría y Alcance
+- [x] Analizar el desfase entre la primera versión entregada y el PDF/referencias del usuario.
+- [x] Definir los requerimientos técnicos y visuales exactos para alcanzar un estándar de sitio galardonado (Awwwards/FWA).
+
+## Fase 2: Investigación de Referencias
+- [x] Estudiar patrones interactivos de sitios premiados (Shader backgrounds, HUDs flotantes, tipografía cinética).
+- [x] Documentar principios de neurociencia visual y dopamina aplicados a UI interactiva.
+
+## Fase 3: Preparación de Activos y Marca
+- [x] Extraer elementos clave de los archivos visuales adjuntos y el PDF.
+- [x] Configurar paleta cromática exacta, tipografías y efectos de post-producción (scanlines, grain, vignette).
+
+## Fase 4: Arquitectura e Interfaz
+- [x] Diseñar la estructura modular de la experiencia (Hero inmersivo, Módulos 01-10 expandidos, Terminal interactiva profunda, Visor 3D/Shader).
+- [x] Planificar los estados de interacción y recompensa variable.
+
+## Fase 5: Implementación Exhaustiva
+- [x] Desarrollar el motor Canvas con lente gravitacional avanzada y partículas en tiempo real.
+- [x] Construir componentes robustos y detallados para cada uno de los 10 bloques conceptuales exigidos en el briefing.
+- [x] Implementar la consola de comandos interactiva con múltiples comandos de diagnóstico y descubrimiento.
+
+## Fase 6: Validación y Pruebas
+- [x] Verificar el rendimiento y la responsividad en escritorio y móvil mediante capturas y build.
+- [x] Comprobar la ausencia de errores de compilación o ejecución en el cliente.
+
+## Fase 7: Consolidación y Entrega
+- [x] Registrar checkpoint formal y empaquetar la solución definitiva para entrega al usuario.
