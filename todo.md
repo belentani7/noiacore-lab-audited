@@ -40,3 +40,10 @@
 - [x] Añadir el visor cinematográfico editable de 30 segundos con tres escenas y overlays de marca.
 - [x] Validar los nuevos controles en escritorio y móvil, incluyendo audio muted y preview.
 - [x] Guardar checkpoint final del sistema multimedia.
+
+## Revisión Single Page / Cold Purple System
+- [x] Consolidar toda la experiencia en una sola página narrativa sin rutas de contenido adicionales.
+- [x] Aplicar negro absoluto como origen, púrpura como único acento y eliminar azul saturado y colores cálidos.
+- [x] Reducir la interfaz a Space Grotesk y JetBrains Mono.
+- [x] Documentar extracción visual y prompts generativos extensos derivados de las referencias aportadas.
+- [x] Guardar checkpoint final de la revisión single page.

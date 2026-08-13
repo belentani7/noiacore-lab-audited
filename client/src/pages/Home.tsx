@@ -2,7 +2,7 @@
  * NOIACORE DESIGN SYSTEM REMINDER
  * Movimiento: Dark Sci-Fi / Immersive FUI.
  * Principio: la atmósfera puede ser compleja; la lectura nunca debe serlo.
- * Contrato visual: fondo #040406, azul #7d9bff, naranja #ff9e5a, Space Grotesk + JetBrains Mono.
+ * Contrato visual: negro absoluto #000000, púrpura profundo #7C3AED, dos familias tipográficas: Space Grotesk + JetBrains Mono.
  * Layout: editorial asimétrico, módulos numerados, rail lateral y capas orbitales.
  */
 import { useEffect, useMemo, useState } from 'react';
@@ -365,7 +365,7 @@ export default function Home() {
       <div className="noise-layer" aria-hidden="true" />
       <div className="scanline-layer" aria-hidden="true" />
       <SoundtrackPlayer />
-      <button type="button" onClick={() => setCinematicOpen(true)} className="fixed bottom-6 left-6 z-40 border border-white/20 bg-black/70 px-4 py-2 font-mono text-[10px] tracking-[0.18em] text-white/80 backdrop-blur-md transition hover:border-blue-300/60 hover:text-white" aria-label="Abrir preview cinematográfico">VIEW CINEMATIC / 30S</button>
+      <button type="button" onClick={() => setCinematicOpen(true)} className="cinematic-launch fixed bottom-6 left-6 z-40 border border-white/20 bg-black/70 px-4 py-2 font-mono text-[10px] tracking-[0.18em] text-white/80 backdrop-blur-md transition hover:border-[#C4B5FD]/60 hover:text-white" aria-label="Abrir preview cinematográfico">VIEW CINEMATIC / 30S</button>
       <div className="scroll-rail" aria-hidden="true"><span style={{ height: `${Math.max(scrollProgress, 3)}%` }} /><small>{String(scrollProgress).padStart(3, '0')}</small></div>
       <Header onTerminal={() => setTerminalOpen(true)} onMenu={() => setMenuOpen((open) => !open)} menuOpen={menuOpen} />
       <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} onTerminal={() => { setMenuOpen(false); setTerminalOpen(true); }} />

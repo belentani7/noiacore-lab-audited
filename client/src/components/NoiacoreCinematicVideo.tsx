@@ -49,7 +49,7 @@ export function NoiacoreCinematicVideo({ onClose }: NoiacoreCinematicVideoProps)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-2xl p-4 sm:p-8">
-      <div className="relative w-full max-w-5xl aspect-video bg-[#020204] border border-blue-500/30 rounded-2xl overflow-hidden shadow-[0_0_80px_rgba(125,155,255,0.2)] flex flex-col justify-between">
+      <div className="relative w-full max-w-5xl aspect-video bg-[#020204] border border-[#7C3AED]/30 rounded-2xl overflow-hidden shadow-[0_0_80px_rgba(124,58,237,0.2)] flex flex-col justify-between">
         
         {/* Top Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10 z-20 bg-black/60 backdrop-blur-md">
@@ -69,20 +69,20 @@ export function NoiacoreCinematicVideo({ onClose }: NoiacoreCinematicVideoProps)
         {/* Scene Viewport */}
         <div className="relative flex-1 flex items-center justify-center overflow-hidden">
           {/* Background atmosphere per scene */}
-          <div className="absolute inset-0 bg-radial from-blue-950/30 via-black to-black opacity-80" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-500/10 via-transparent to-transparent animate-pulse" />
+          <div className="absolute inset-0 bg-radial from-[#4C1D95]/30 via-black to-black opacity-80" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#7C3AED]/10 via-transparent to-transparent animate-pulse" />
 
           {currentScene === 0 && (
             <div className="relative z-10 flex flex-col items-center text-center px-4 animate-fade-in">
               <MinimalSymbol size={96} glow={true} />
               <h2 className="font-sans text-3xl sm:text-5xl font-extralight tracking-widest text-white mt-6 uppercase">NOIACORE LAB</h2>
-              <p className="font-mono text-xs sm:text-sm tracking-[0.3em] text-blue-300 mt-3">A SILENT ARCHITECTURE FOR LOUD IDEAS</p>
+              <p className="font-mono text-xs sm:text-sm tracking-[0.3em] text-[#C4B5FD] mt-3">A SILENT ARCHITECTURE FOR LOUD IDEAS</p>
             </div>
           )}
 
           {currentScene === 1 && (
             <div className="relative z-10 flex flex-col items-center text-center px-4 animate-fade-in">
-              <div className="w-[2px] h-36 bg-gradient-to-b from-transparent via-white to-blue-400 shadow-[0_0_30px_rgba(255,255,255,0.8)]" />
+              <div className="w-[2px] h-36 bg-gradient-to-b from-transparent via-white to-[#A855F7] shadow-[0_0_30px_rgba(255,255,255,0.8)]" />
               <h2 className="font-sans text-2xl sm:text-4xl font-light tracking-widest text-white mt-6 uppercase">VERTICAL THRESHOLD</h2>
               <p className="font-mono text-xs sm:text-sm tracking-[0.3em] text-white/70 mt-3">PARALLAX DEPTH & VOLUMETRIC OBSIDIAN</p>
             </div>
@@ -91,21 +91,21 @@ export function NoiacoreCinematicVideo({ onClose }: NoiacoreCinematicVideoProps)
           {currentScene === 2 && (
             <div className="relative z-10 flex flex-col items-center text-center px-4 animate-fade-in">
               <div className="grid grid-cols-3 gap-6 mb-6">
-                <div className="bg-black/60 border border-blue-500/30 p-4 rounded-xl backdrop-blur-md">
+                <div className="bg-black/60 border border-[#7C3AED]/30 p-4 rounded-xl backdrop-blur-md">
                   <span className="font-mono text-[10px] text-white/50 block">FPS</span>
-                  <strong className="font-mono text-xl text-blue-300">60.0</strong>
+                  <strong className="font-mono text-xl text-[#C4B5FD]">60.0</strong>
                 </div>
-                <div className="bg-black/60 border border-blue-500/30 p-4 rounded-xl backdrop-blur-md">
+                <div className="bg-black/60 border border-[#7C3AED]/30 p-4 rounded-xl backdrop-blur-md">
                   <span className="font-mono text-[10px] text-white/50 block">NODES</span>
-                  <strong className="font-mono text-xl text-blue-300">12,480</strong>
+                  <strong className="font-mono text-xl text-[#C4B5FD]">12,480</strong>
                 </div>
-                <div className="bg-black/60 border border-blue-500/30 p-4 rounded-xl backdrop-blur-md">
+                <div className="bg-black/60 border border-[#7C3AED]/30 p-4 rounded-xl backdrop-blur-md">
                   <span className="font-mono text-[10px] text-white/50 block">SYNC</span>
-                  <strong className="font-mono text-xl text-blue-300">99.8%</strong>
+                  <strong className="font-mono text-xl text-[#C4B5FD]">99.8%</strong>
                 </div>
               </div>
               <h2 className="font-sans text-2xl sm:text-4xl font-light tracking-widest text-white uppercase">SYSTEM TELEMETRY</h2>
-              <p className="font-mono text-xs sm:text-sm tracking-[0.3em] text-blue-300 mt-2">INTELLIGENCE DESIGNED AS EXPERIENCE</p>
+              <p className="font-mono text-xs sm:text-sm tracking-[0.3em] text-[#C4B5FD] mt-2">INTELLIGENCE DESIGNED AS EXPERIENCE</p>
             </div>
           )}
         </div>
@@ -114,13 +114,13 @@ export function NoiacoreCinematicVideo({ onClose }: NoiacoreCinematicVideoProps)
         <div className="p-6 border-t border-white/10 z-20 bg-black/80 backdrop-blur-md flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div>
-              <span className="font-mono text-[11px] tracking-widest text-blue-400 block">{scenes[currentScene].title}</span>
+              <span className="font-mono text-[11px] tracking-widest text-[#A855F7] block">{scenes[currentScene].title}</span>
               <span className="font-sans text-sm text-white/80">{scenes[currentScene].subtitle}</span>
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setIsPlaying(!isPlaying)}
-                className="w-10 h-10 rounded-full bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-white hover:bg-blue-500/40 transition-all cursor-pointer"
+                className="w-10 h-10 rounded-full bg-[#7C3AED]/20 border border-[#7C3AED]/40 flex items-center justify-center text-white hover:bg-[#7C3AED]/40 transition-all cursor-pointer"
                 aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
               >
                 {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
@@ -137,7 +137,7 @@ export function NoiacoreCinematicVideo({ onClose }: NoiacoreCinematicVideoProps)
           {/* Progress bar */}
           <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
             <div 
-              className="h-full bg-gradient-to-r from-blue-500 to-white transition-all duration-75"
+              className="h-full bg-gradient-to-r from-[#7C3AED] to-white transition-all duration-75"
               style={{ width: `${progress}%` }}
             />
           </div>

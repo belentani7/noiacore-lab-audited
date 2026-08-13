@@ -14,11 +14,11 @@ export function MinimalSymbol({ className = '', size = 32, glow = true }: Minima
       style={{ width: size, height: size }}
     >
       {glow && (
-        <div className="absolute inset-0 bg-blue-500/20 blur-md rounded-full pointer-events-none animate-pulse" />
+        <div className="absolute inset-0 bg-[#7C3AED]/30 blur-md rounded-full pointer-events-none animate-pulse" />
       )}
       <svg 
         viewBox="0 0 100 100" 
-        className="w-full h-full text-white relative z-10 drop-shadow-[0_0_12px_rgba(255,255,255,0.35)]"
+        className="w-full h-full text-white relative z-10 drop-shadow-[0_0_12px_rgba(124,58,237,0.35)]"
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -42,7 +42,7 @@ export function MinimalSymbol({ className = '', size = 32, glow = true }: Minima
           y1="12" 
           x2="50" 
           y2="38" 
-          stroke="#7D9BFF" 
+          stroke="#A855F7" 
           strokeWidth="1.5" 
           strokeLinecap="round" 
         />
