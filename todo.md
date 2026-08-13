@@ -34,3 +34,9 @@
 - [x] Construir parallax de profundidad para fondo, estructuras, haz, insignia y reflejo.
 - [x] Validar recorte parcial de estructuras, composición mobile y reducción de movimiento.
 - [ ] Guardar checkpoint de la elevación visual y entregar la nueva versión.
+
+## Sistema Multimedia NOIACORE
+- [x] Integrar la banda sonora original The Threshold Resonance con control de reproducción respetuoso con autoplay.
+- [x] Añadir el visor cinematográfico editable de 30 segundos con tres escenas y overlays de marca.
+- [x] Validar los nuevos controles en escritorio y móvil, incluyendo audio muted y preview.
+- [x] Guardar checkpoint final del sistema multimedia.

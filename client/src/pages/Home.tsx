@@ -44,6 +44,8 @@ import { toast } from 'sonner';
 import { NeuralCanvas } from '@/components/NeuralCanvas';
 import { ParallaxAtmosphere } from '@/components/ParallaxAtmosphere';
 import { TerminalPanel } from '@/components/TerminalPanel';
+import { SoundtrackPlayer } from '@/components/SoundtrackPlayer';
+import { NoiacoreCinematicVideo } from '@/components/NoiacoreCinematicVideo';
 import { modules, navItems, signalFeed, systemMetrics, type ModuleCategory, type NoiacoreModule } from '@/lib/noiacoreData';
 
 const heroImage = '/manus-storage/noiacore-hero_5f6d0c5f.jpg';
@@ -340,6 +342,7 @@ export default function Home() {
   const [selectedModule, setSelectedModule] = useState<NoiacoreModule | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [systemPulse, setSystemPulse] = useState(0);
+  const [cinematicOpen, setCinematicOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
@@ -361,6 +364,8 @@ export default function Home() {
     <div className="noiacore-app">
       <div className="noise-layer" aria-hidden="true" />
       <div className="scanline-layer" aria-hidden="true" />
+      <SoundtrackPlayer />
+      <button type="button" onClick={() => setCinematicOpen(true)} className="fixed bottom-6 left-6 z-40 border border-white/20 bg-black/70 px-4 py-2 font-mono text-[10px] tracking-[0.18em] text-white/80 backdrop-blur-md transition hover:border-blue-300/60 hover:text-white" aria-label="Abrir preview cinematográfico">VIEW CINEMATIC / 30S</button>
       <div className="scroll-rail" aria-hidden="true"><span style={{ height: `${Math.max(scrollProgress, 3)}%` }} /><small>{String(scrollProgress).padStart(3, '0')}</small></div>
       <Header onTerminal={() => setTerminalOpen(true)} onMenu={() => setMenuOpen((open) => !open)} menuOpen={menuOpen} />
       <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} onTerminal={() => { setMenuOpen(false); setTerminalOpen(true); }} />
@@ -380,6 +385,7 @@ export default function Home() {
       <Footer />
       {terminalOpen && <TerminalPanel onClose={() => setTerminalOpen(false)} />}
       {selectedModule && <ModuleModal module={selectedModule} onClose={() => setSelectedModule(null)} />}
+      {cinematicOpen && <NoiacoreCinematicVideo onClose={() => setCinematicOpen(false)} />}
     </div>
   );
 }
