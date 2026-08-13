@@ -1,8 +1,8 @@
-# Plan de Trabajo — Secuencia Editorial Diapositivas Desde el Negro (NOIACORE LAB)
+# Plan de Trabajo — Integración Definitiva NOIACORE LAB
 
-- [x] Auditar el briefing masivo de dopamina e ilusiones ópticas para adaptarlo a una estética elegante y silenciosa.
-- [x] Definir el sistema de transiciones en fundido desde negro absoluto (`#000000`) con tipografía Space Grotesk e Inter.
-- [x] Construir la dramaturgia de capítulos interactivos donde el visitante avanza por revelaciones guiadas.
-- [x] Integrar el repertorio de análisis, perfiles y soluciones en un formato de diapositivas de alta gama sin aspecto de dashboard.
-- [x] Validar tiempos lentos, accesibilidad, ausencia de elementos ruidosos y comportamiento responsive en móvil y escritorio.
-- [x] Registrar checkpoint formal y entregar la experiencia editorial definitiva basada en el código de referencia Qwen.
+- [x] Indexar y copiar imágenes y recursos subidos (`/home/ubuntu/upload/*`) a assets webdev.
+- [x] Extraer pautas y contenidos de los HTML y PDF de referencia.
+- [x] Construir el motor de perfiles de cliente, escaneo simulado, informe progresivo y rutas no repetitivas.
+- [x] Implementar la interfaz monocromática en negro absoluto y gris piedra, sin botones estridentes y con revelación editorial lenta.
+- [x] Validar compilación, tipografía dual (Space Grotesk + Inter) y ausencia de colores chillones.
+- [x] Registrar checkpoint formal y entregar la experiencia definitiva integrada.
