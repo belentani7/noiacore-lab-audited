@@ -1,7 +1,8 @@
-# Plan de Trabajo — Versión Minimalista Sin Botones y Puramente Lumínica
+# Plan de Trabajo — Secuencia Editorial Diapositivas Desde el Negro (NOIACORE LAB)
 
-- [x] Definir la interacción invisible basada en pulso de luz, clic en el símbolo y atajos de teclado.
-- [x] Recalibrar la interfaz para suprimir botones tradicionales, sustituyéndolos por tipografía reactiva y haces de luz sutiles.
-- [x] Implementar la activación por toque o clic en cualquier parte de la pantalla (o barra espaciadora / Enter).
-- [x] Validar la ausencia total de elementos visuales ruidosos o acentos chillones.
-- [x] Registrar checkpoint formal de la experiencia minimalista sin botones.
+- [x] Auditar el briefing masivo de dopamina e ilusiones ópticas para adaptarlo a una estética elegante y silenciosa.
+- [x] Definir el sistema de transiciones en fundido desde negro absoluto (`#000000`) con tipografía Space Grotesk e Inter.
+- [x] Construir la dramaturgia de capítulos interactivos donde el visitante avanza por revelaciones guiadas.
+- [x] Integrar el repertorio de análisis, perfiles y soluciones en un formato de diapositivas de alta gama sin aspecto de dashboard.
+- [x] Validar tiempos lentos, accesibilidad, ausencia de elementos ruidosos y comportamiento responsive en móvil y escritorio.
+- [x] Registrar checkpoint formal y entregar la experiencia editorial definitiva.
