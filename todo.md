@@ -27,3 +27,10 @@
 
 ## Fase 7: Consolidación y Entrega
 - [x] Registrar checkpoint formal y empaquetar la solución definitiva para entrega al usuario.
+
+## Elevación / Vertical Threshold
+- [x] Integrar el concepto de umbral vertical sin exponer placeholders generativos fallidos.
+- [x] Añadir nubes volumétricas procedurales y capas de polvo como atmósfera separable.
+- [x] Construir parallax de profundidad para fondo, estructuras, haz, insignia y reflejo.
+- [x] Validar recorte parcial de estructuras, composición mobile y reducción de movimiento.
+- [ ] Guardar checkpoint de la elevación visual y entregar la nueva versión.

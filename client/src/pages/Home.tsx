@@ -42,6 +42,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { NeuralCanvas } from '@/components/NeuralCanvas';
+import { ParallaxAtmosphere } from '@/components/ParallaxAtmosphere';
 import { TerminalPanel } from '@/components/TerminalPanel';
 import { modules, navItems, signalFeed, systemMetrics, type ModuleCategory, type NoiacoreModule } from '@/lib/noiacoreData';
 
@@ -183,6 +184,7 @@ function HeroSection({ onTerminal, onIntent }: { onTerminal: () => void; onInten
     <section className="hero-section" id="top">
       <div className="hero-section__image" style={{ backgroundImage: `url(${heroImage})` }} />
       <div className="hero-section__vignette" />
+      <ParallaxAtmosphere />
       <NeuralCanvas density={210} className="hero-section__canvas" />
       <div className="hero-section__grid" />
       <div className="hero-section__coordinates">41°24'12.2"N / 2°10'26.5"E</div>
