@@ -1,7 +1,8 @@
-# Plan de Trabajo — Composición Visual Estática NOIACORE LAB
+# Plan de Trabajo — Profundidad 3D y HTMLs Elevados (NOIACORE LAB)
 
-- [x] Fijar las restricciones estrictas: Cero emojis, cero iconos de sistema, cero ventanas de código, cero terminales, cero texto escribiéndose o borrándose, y sin pantallas de carga iniciales.
-- [x] Rediseñar la escena para que todo el contenido aparezca renderizado y completo desde el primer instante.
-- [x] Construir una composición puramente visual y editorial utilizando las imágenes reales integradas y una retícula de negro absoluto y gris piedra.
-- [x] Validar compilación, tipografía dual (Space Grotesk + Inter) y ausencia de elementos ruidosos.
-- [x] Registrar checkpoint formal y entregar la experiencia visual estática definitiva.
+- [x] Inventariar los HTML aportados (Qwen, Z.ai, Manos Abiertas, Belentani Portal) y definir su traducción espacial.
+- [x] Diseñar el motor de capas 3D, parallax con movimiento de cursor y zoom in/out suave.
+- [ ] Generar activos PNG originales para las páginas clave con estética cinematográfica elevada.
+- [ ] Construir la experiencia en Home.tsx integrando las escenas de los HTML originales con profundidad espacial.
+- [ ] Validar rendimiento a 60 FPS, tipografía dual, responsividad y coherencia cromática.
+- [x] Registrar checkpoint formal y entregar la versión definitiva con espacio 3D.

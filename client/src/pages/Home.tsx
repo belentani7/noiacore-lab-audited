@@ -1,132 +1,128 @@
 /*
- * NOIACORE — MATERIAL FACTORY / STATIC PERFORMANCE
- *
- * Regla de dirección: todo está presente al abrir. No hay boot screen,
- * texto que se escribe, terminal, emoji, cursor simulado ni ventanas de sistema.
- * La vida procede de luz, profundidad, escala, materia e imágenes reales.
+ * NOIACORE // 3D SPATIAL DEPTH & ELEVATED HTML REFERENCES
+ * Cada sección representa una página de los HTML aportados, elevada con
+ * estética cinematográfica, profundidad 3D real, zoom in/out y parallax interactivo.
  */
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MinimalSymbol } from '@/components/MinimalSymbol';
-import { FACTORY_TOOLS } from '@/lib/factoryTools';
-import { MEDIA_ASSETS, FEATURED_ASSETS, ARCHIVE_ASSETS } from '@/lib/mediaAssets';
-
-const MANIFEST = [
-  ['01', 'ManusCore', 'orquestación'],
-  ['02', 'Claude Code', 'arquitectura'],
-  ['03', 'PowerShell', 'diagnóstico'],
-  ['04', 'NoiaWriter', 'lenguaje'],
-  ['05', 'NoiaSheets', 'estructura'],
-  ['06', 'NoiaShop', 'materia'],
-  ['07', 'NoiaDALL-E', 'síntesis'],
-  ['08', 'Noiaclaw', 'vigilancia'],
-  ['09', 'Machine Mind', 'percepción'],
-  ['10', 'Manus AI', 'criterio'],
-  ['11', 'SecureVault', 'memoria'],
-  ['12', 'Resonance', 'frecuencia'],
-  ['13', 'Topology', 'conexión'],
-  ['14', 'DOM Inspector', 'lectura'],
-  ['15', 'Escape Sequence', 'umbral'],
-] as const;
-
-function MaterialImage({ src, alt, className = '' }: { src: string; alt: string; className?: string }) {
-  return <img className={`material-image ${className}`} src={src} alt={alt} loading="lazy" />;
-}
+import { FEATURED_ASSETS, ARCHIVE_ASSETS } from '@/lib/mediaAssets';
 
 export default function Home() {
-  const stageRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   useEffect(() => {
-    const stage = stageRef.current;
-    if (!stage) return;
-    const move = (event: PointerEvent) => {
-      const x = event.clientX / window.innerWidth - 0.5;
-      const y = event.clientY / window.innerHeight - 0.5;
-      stage.style.setProperty('--field-x', `${x * 8}px`);
-      stage.style.setProperty('--field-y', `${y * 6}px`);
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = Math.min(Math.max(scrollY / docHeight, 0), 1);
+      // Zoom in / zoom out effect based on scroll position
+      const z = 1 + Math.sin(progress * Math.PI * 2) * 0.08;
+      setZoomLevel(z);
     };
-    window.addEventListener('pointermove', move, { passive: true });
-    return () => window.removeEventListener('pointermove', move);
+
+    const handlePointer = (e: PointerEvent) => {
+      const el = containerRef.current;
+      if (!el) return;
+      const x = (e.clientX / window.innerWidth - 0.5) * 20;
+      const y = (e.clientY / window.innerHeight - 0.5) * 20;
+      el.style.setProperty('--cursor-x', `${x}px`);
+      el.style.setProperty('--cursor-y', `${y}px`);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('pointermove', handlePointer, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('pointermove', handlePointer);
+    };
   }, []);
 
   return (
-    <div ref={stageRef} className="material-factory">
-      <div className="factory-atmosphere" aria-hidden="true" />
-      <div className="factory-grain" aria-hidden="true" />
+    <div ref={containerRef} className="noia-spatial-root" style={{ transform: `scale(${zoomLevel})` }}>
+      <div className="spatial-atmosphere" aria-hidden="true" />
+      <div className="spatial-grain" aria-hidden="true" />
 
-      <header className="factory-header">
-        <div className="factory-mark"><MinimalSymbol size={22} glow={false} /><span>NOIACORE</span></div>
-        <div className="factory-header-meta"><span>FIELD / 01</span><span>BLACK MATTER STUDY</span></div>
+      {/* FIXED NAVIGATION */}
+      <header className="spatial-nav">
+        <div className="spatial-brand">
+          <MinimalSymbol size={22} glow={false} />
+          <span>NOIACORE // SPATIAL ARCHITECTURE</span>
+        </div>
+        <div className="spatial-nav-info">
+          <span>Z-DEPTH ENABLED</span>
+          <span>HTML SOURCE ELEVATED</span>
+        </div>
       </header>
 
-      <main>
-        <section className="factory-opening">
-          <div className="opening-void" aria-hidden="true" />
-          <div className="opening-beam" aria-hidden="true" />
-          <div className="opening-figure opening-figure-left" aria-hidden="true" />
-          <div className="opening-figure opening-figure-right" aria-hidden="true" />
-          <div className="opening-copy">
-            <span className="eyebrow">NOIACORE LAB / MATERIAL FACTORY</span>
-            <h1>La forma<br /><i>piensa</i><br />en silencio.</h1>
-            <p>Una fábrica de percepción, imagen y criterio. Todo lo que has traído permanece dentro: transformado, no reemplazado.</p>
+      {/* 3D SCENE CONTAINER */}
+      <main className="spatial-stages">
+        
+        {/* PAGE 01: QWEN / THE VERTICAL THRESHOLD */}
+        <section className="spatial-stage" data-depth="0.1">
+          <div className="stage-bg-layer" style={{ backgroundImage: `url(${FEATURED_ASSETS[0].src})` }} />
+          <div className="stage-content">
+            <span className="stage-eyebrow">REFERENCIA 01 // QWEN ARCHITECTURE</span>
+            <h1>El umbral<br /><i>vertical.</i></h1>
+            <p>Estructuras laterales recortadas, columna de luz central y un plano simétrico donde la materia se pliega sobre sí misma.</p>
           </div>
-          <div className="opening-foot"><span>01—15</span><span>THE MACHINE IS ALREADY OPEN</span><span>SCROLL / FIELD</span></div>
+          <div className="stage-depth-indicator">FRONT LAYER // Z +120px</div>
         </section>
 
-        <section className="factory-threshold editorial-band">
-          <div className="band-title"><span className="eyebrow">UMBRAL / A</span><h2>Una máquina<br /><i>sin espectáculo.</i></h2></div>
-          <div className="threshold-image"><MaterialImage src={FEATURED_ASSETS[0].src} alt="Umbral vertical de luz y arquitectura" /></div>
-          <div className="threshold-note"><span className="note-line" /> <p>La estructura no se presenta. Se percibe por sus bordes, sus reflejos y la distancia exacta entre una cosa y la siguiente.</p></div>
+        {/* PAGE 02: Z.AI / ADVANCED AI AGENT STATION */}
+        <section className="spatial-stage" data-depth="0.3">
+          <div className="stage-bg-layer" style={{ backgroundImage: `url(${FEATURED_ASSETS[1].src})` }} />
+          <div className="stage-content">
+            <span className="stage-eyebrow">REFERENCIA 02 // Z.AI MASTER STATION</span>
+            <h1>El núcleo<br /><i>orbital.</i></h1>
+            <p>Anillos concéntricos de telemetría, pulso cian profundo y cálculo autónomo en tiempo real sobre superficies de obsidiana.</p>
+          </div>
+          <div className="stage-depth-indicator">MID LAYER // Z +240px</div>
         </section>
 
-        <section className="factory-desk editorial-band">
-          <div className="desk-copy"><span className="eyebrow">DESK / MANUSCORE</span><h2>Quince fuerzas<br /><i>en una superficie.</i></h2><p>Las herramientas no aparecen como aplicaciones separadas. Operan como estaciones de la misma fábrica: una escribe, otra ordena, otra mira, otra decide.</p></div>
-          <div className="desk-image-main"><MaterialImage src={FEATURED_ASSETS[1].src} alt="Insignia orbital y núcleo de NOIACORE" /></div>
-          <div className="desk-image-small"><MaterialImage src={FEATURED_ASSETS[2].src} alt="Campo visual de referencia aportado" /></div>
-          <div className="desk-rule" />
+        {/* PAGE 03: MANOS ABIERTAS / MASTER STATION */}
+        <section className="spatial-stage" data-depth="0.5">
+          <div className="stage-bg-layer" style={{ backgroundImage: `url(${FEATURED_ASSETS[2].src})` }} />
+          <div className="stage-content">
+            <span className="stage-eyebrow">REFERENCIA 03 // MANOS ABIERTAS</span>
+            <h1>La atmósfera<br /><i>en suspensión.</i></h1>
+            <p>Capas de polvo cósmico y volúmenes de luz que reaccionan al movimiento del cursor en el espacio tridimensional.</p>
+          </div>
+          <div className="stage-depth-indicator">DEEP LAYER // Z +360px</div>
         </section>
 
-        <section className="factory-manifest editorial-band">
-          <div className="manifest-head"><span className="eyebrow">MANUSCORE / FACTORY MAP</span><h2>Todo está<br /><i>conectado.</i></h2></div>
-          <div className="manifest-list">
-            {MANIFEST.map(([number, name, functionName]) => (
-              <div className="manifest-row" key={number}>
-                <span>{number}</span><strong>{name}</strong><em>{functionName}</em><i className="manifest-wire" />
+        {/* PAGE 04: BELENTANI PORTAL */}
+        <section className="spatial-stage" data-depth="0.7">
+          <div className="stage-bg-layer" style={{ backgroundImage: `url(${FEATURED_ASSETS[3].src})` }} />
+          <div className="stage-content">
+            <span className="stage-eyebrow">REFERENCIA 04 // BELENTANI PORTAL</span>
+            <h1>El guardián<br /><i>de obsidiana.</i></h1>
+            <p>Presencias silenciosas y formas orgánicas oscuras que custodian los límites de la memoria compartida.</p>
+          </div>
+          <div className="stage-depth-indicator">ABYSS LAYER // Z +480px</div>
+        </section>
+
+        {/* PAGE 05: ARCHIVE MATRIX */}
+        <section className="spatial-stage spatial-matrix">
+          <div className="matrix-grid">
+            {ARCHIVE_ASSETS.slice(0, 8).map((asset, i) => (
+              <div key={asset.id} className="matrix-card" style={{ transform: `translateZ(${(i + 1) * 20}px)` }}>
+                <img src={asset.src} alt={asset.caption} />
+                <div className="matrix-meta">
+                  <span>{asset.label}</span>
+                  <small>{asset.caption}</small>
+                </div>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="factory-archive editorial-band">
-          <div className="archive-heading"><span className="eyebrow">ARCHIVE / RAW SIGNALS</span><h2>La materia<br /><i>es la interfaz.</i></h2><p>Los materiales originales permanecen visibles, en escala y silencio. Cada uno contiene una parte de la máquina.</p></div>
-          <div className="archive-collage">
-            {ARCHIVE_ASSETS.map((asset, index) => (
-              <figure className={`archive-piece archive-piece-${(index % 7) + 1}`} key={asset.id}>
-                <MaterialImage src={asset.src} alt={asset.caption} />
-                <figcaption><span>{asset.label}</span><small>{asset.caption}</small></figcaption>
-              </figure>
-            ))}
-          </div>
-        </section>
-
-        <section className="factory-mind editorial-band">
-          <div className="mind-field" aria-hidden="true"><span /><span /><span /><span /></div>
-          <div className="mind-copy"><span className="eyebrow">MACHINE MIND / SHADER FIELD</span><h2>Dentro de la máquina<br /><i>no hay una pantalla.</i></h2><p>Hay capas de memoria, polvo, velocidad y luz. El shader no decora el sistema: es el registro de lo que la máquina está pensando.</p></div>
-          <div className="mind-caption"><span>BLACK FIELD</span><span>LOW SATURATION</span><span>NOISE / 0.03</span></div>
-        </section>
-
-        <section className="factory-crab editorial-band">
-          <div className="crab-image"><MaterialImage src={FEATURED_ASSETS[3].src} alt="Cangrejo o criatura oscura de referencia visual" /></div>
-          <div className="crab-copy"><span className="eyebrow">NOIACLAW / UNIT 08</span><h2>El guardián<br /><i>de lo profundo.</i></h2><p>Noiaclaw no es un personaje ni un emoji. Es una criatura de vigilancia: azul casi negro, pesada, silenciosa, atenta a las zonas que la interfaz no explica.</p><div className="crab-spec"><span>BODY / OBSIDIAN BLUE</span><span>BEHAVIOUR / NONVERBAL</span><span>ROLE / PERIMETER</span></div></div>
-        </section>
-
-        <section className="factory-final editorial-band">
-          <div className="final-symbol"><MinimalSymbol size={88} glow={false} /></div>
-          <div className="final-copy"><span className="eyebrow">NOIACORE / MANUSCORE</span><h2>Una fábrica<br /><i>completa.</i></h2><p>Sin ventanas que imitan un sistema. Sin ruido que exige atención. Solo un campo físico donde el material, la herramienta y la decisión pueden convivir.</p></div>
-          <div className="final-index">NOIACORE LAB / 2026 / FIELD 01</div>
-        </section>
       </main>
 
-      <footer className="factory-footer"><span>NOIACORE</span><span>THE MACHINE IS ALREADY OPEN</span><span>{MEDIA_ASSETS.length} MATERIALS / {FACTORY_TOOLS.length} FORCES</span></footer>
+      <footer className="spatial-footer">
+        <span>NOIACORE LAB 2026</span>
+        <span>SPATIAL RENDER 3D // ACTIVE</span>
+      </footer>
     </div>
   );
 }
