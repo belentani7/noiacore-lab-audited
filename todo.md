@@ -1,8 +1,7 @@
-# Plan de Trabajo — Fábrica / Escape Room NOIACORE LAB (15 Herramientas)
+# Plan de Trabajo — Composición Visual Estática NOIACORE LAB
 
-- [x] Inventariar nuevos HTMLs y planificar la integración de estructuras, datos y estilos.
-- [x] Diseñar el ecosistema de 15 herramientas conectadas (Escritorio Windows, ManusCore, Chat AI Claude-code style, Word, PowerShell, Excel de empleados, Photoshop, DALL·E, Noiaclaw con cangrejo azul oscuro, Shaders de la mente de la máquina, etc.).
-- [x] Implementar el Shell de Escritorio Virtual y el sistema de ventanas flotantes.
-- [x] Programar las 15 herramientas con contenido denso interactivo para varios minutos de exploración.
-- [x] Validar compilación, tipografía dual, paleta estricta sin colores chillones y responsive.
-- [x] Registrar checkpoint formal y entregar la fábrica completa.
+- [x] Fijar las restricciones estrictas: Cero emojis, cero iconos de sistema, cero ventanas de código, cero terminales, cero texto escribiéndose o borrándose, y sin pantallas de carga iniciales.
+- [x] Rediseñar la escena para que todo el contenido aparezca renderizado y completo desde el primer instante.
+- [x] Construir una composición puramente visual y editorial utilizando las imágenes reales integradas y una retícula de negro absoluto y gris piedra.
+- [x] Validar compilación, tipografía dual (Space Grotesk + Inter) y ausencia de elementos ruidosos.
+- [x] Registrar checkpoint formal y entregar la experiencia visual estática definitiva.
