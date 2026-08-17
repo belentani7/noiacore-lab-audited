@@ -1,180 +1,291 @@
-/*
- * NOIACORE // THE INFINITE SPATIAL FACTORY (WEB INACABABLE)
- * Integrates all user references (Qwen, Z.ai, Manos Abiertas, Belentani),
- * 15 factory tools, Gestalt proximity/closure physics, Web Audio synthesis,
- * and endless 3D Z-depth navigation over absolute black (#000000).
+/**
+ * NOIACORE LAB — THE INFINITE SPATIAL FACTORY
+ * Dirección de esta página: editorial mineral sobre negro absoluto; las imágenes aportadas
+ * funcionan como materia arquitectónica, la profundidad es lenta y ninguna interacción
+ * depende de ventanas de software, emojis, escritura progresiva o sonido automático.
  */
 import { useEffect, useRef, useState } from 'react';
 import { MinimalSymbol } from '@/components/MinimalSymbol';
 import { FACTORY_TOOLS } from '@/lib/factoryTools';
-import { MEDIA_ASSETS, FEATURED_ASSETS, ARCHIVE_ASSETS } from '@/lib/mediaAssets';
-import { soundEngine, SoundPreset } from '@/lib/noiacoreSoundEngine';
+import { ARCHIVE_ASSETS, FEATURED_ASSETS } from '@/lib/mediaAssets';
+
+type PointerFrame = { x: number; y: number; depth: number };
+
+const chapters = [
+  {
+    id: 'threshold',
+    index: '01',
+    eyebrow: 'QWEN ARCHITECTURE / VERTICAL THRESHOLD',
+    title: 'El umbral',
+    emphasis: 'vertical.',
+    body: 'Una entrada sin interfaz. El campo se abre como una estructura de piedra y luz: lo que importa no aparece de golpe, emerge cuando el visitante decide atravesarlo.',
+    asset: FEATURED_ASSETS[0],
+    depth: 'Z +100 / FRONT MATTER',
+    note: 'La primera puerta no explica la fábrica. La deja presentirse.',
+  },
+  {
+    id: 'orbit',
+    index: '02',
+    eyebrow: 'Z.AI / ORBITAL REASONING',
+    title: 'El núcleo',
+    emphasis: 'orbital.',
+    body: 'La inteligencia no se representa como un panel. Se percibe como una órbita: capas de contexto, criterio y memoria que se aproximan sin invadir el silencio.',
+    asset: FEATURED_ASSETS[1],
+    depth: 'Z +280 / ORBITAL FIELD',
+    note: 'Cada vuelta conserva una parte de la pregunta original.',
+  },
+  {
+    id: 'atmosphere',
+    index: '03',
+    eyebrow: 'MANOS ABIERTAS / ATMOSPHERIC FIELD',
+    title: 'Materia en',
+    emphasis: 'suspensión.',
+    body: 'El archivo visual se convierte en atmósfera. Ninguna captura se trata como decoración: cada una conserva una tensión, una escala o una decisión que alimenta la lectura.',
+    asset: FEATURED_ASSETS[2],
+    depth: 'Z +420 / DEEP ATMOSPHERE',
+    note: 'La forma permanece abierta para que el criterio pueda entrar.',
+  },
+  {
+    id: 'portal',
+    index: '04',
+    eyebrow: 'BELENTANI / MEMORY GATEWAY',
+    title: 'El guardián',
+    emphasis: 'de obsidiana.',
+    body: 'Una presencia contenida custodía el límite entre observar y participar. El portal no ofrece una salida rápida; ordena el material hasta que la siguiente decisión se vuelve evidente.',
+    asset: FEATURED_ASSETS[3],
+    depth: 'Z +560 / MEMORY GATEWAY',
+    note: 'Toda fábrica seria necesita una zona que no se pueda fingir.',
+  },
+];
+
+function scrollToChapter(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
 export default function Home() {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [activeTool, setActiveTool] = useState<string | null>(null);
-  const [infiniteDepth, setInfiniteDepth] = useState(1);
-  const [gazePoint, setGazePoint] = useState({ x: 0, y: 0 });
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const frameRef = useRef<number | null>(null);
+  const pointerRef = useRef<PointerFrame>({ x: 0, y: 0, depth: 1 });
+  const [depth, setDepth] = useState(1);
+  const [activeToolId, setActiveToolId] = useState(FACTORY_TOOLS[0]?.id ?? 'manuscore');
+  const activeTool = FACTORY_TOOLS.find((tool) => tool.id === activeToolId) ?? FACTORY_TOOLS[0];
 
   useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const applyFrame = () => {
+      frameRef.current = null;
+      const point = pointerRef.current;
+      root.style.setProperty('--cursor-x', `${point.x}px`);
+      root.style.setProperty('--cursor-y', `${point.y}px`);
+      root.style.setProperty('--depth-scale', `${point.depth}`);
+    };
+
+    const scheduleFrame = () => {
+      if (frameRef.current === null) frameRef.current = window.requestAnimationFrame(applyFrame);
+    };
+
+    const handlePointer = (event: PointerEvent) => {
+      pointerRef.current.x = (event.clientX / window.innerWidth - 0.5) * 26;
+      pointerRef.current.y = (event.clientY / window.innerHeight - 0.5) * 20;
+      scheduleFrame();
+    };
+
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = maxScroll > 0 ? scrollY / maxScroll : 0;
-      setInfiniteDepth(1 + progress * 2.5);
+      const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+      const progress = Math.min(window.scrollY / maxScroll, 1);
+      pointerRef.current.depth = 1 + progress * 0.035;
+      setDepth(1 + progress * 2.5);
+      scheduleFrame();
     };
 
-    const handlePointer = (e: PointerEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 30;
-      const y = (e.clientY / window.innerHeight - 0.5) * 30;
-      setGazePoint({ x, y });
-      const el = containerRef.current;
-      if (el) {
-        el.style.setProperty('--cursor-x', `${x}px`);
-        el.style.setProperty('--cursor-y', `${y}px`);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('pointermove', handlePointer, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
     return () => {
-      window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('pointermove', handlePointer);
+      window.removeEventListener('scroll', handleScroll);
+      if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current);
     };
   }, []);
 
-  const triggerSound = (preset: SoundPreset = SoundPreset.NOIA) => {
-    soundEngine.play(preset);
-  };
-
   return (
-    <div ref={containerRef} className="noia-infinite-root" style={{ transform: `scale(${1 + (infiniteDepth - 1) * 0.03})` }}>
+    <div ref={rootRef} className="noia-spatial-root">
       <div className="spatial-atmosphere" aria-hidden="true" />
       <div className="spatial-grain" aria-hidden="true" />
+      <div className="spatial-horizon" aria-hidden="true" />
 
-      {/* FIXED NAVIGATION */}
       <header className="spatial-nav">
-        <div className="spatial-brand" onClick={() => triggerSound(SoundPreset.SUCCESS)}>
+        <a className="spatial-brand" href="#origin" aria-label="NOIACORE LAB, volver al origen">
           <MinimalSymbol size={22} glow={false} />
           <span>NOIACORE // INFINITE SPATIAL FACTORY</span>
-        </div>
-        <div className="spatial-nav-info">
-          <span>Z-DEPTH: {infiniteDepth.toFixed(2)}X</span>
-          <span>15 TOOLS ACTIVE</span>
-          <span>GESTALT ENGINE</span>
+        </a>
+        <div className="spatial-nav-info" aria-label="Estado de la experiencia">
+          <span>Z-DEPTH: {depth.toFixed(2)}X</span>
+          <span>15 STATIONS</span>
+          <span>GESTALT FIELD</span>
         </div>
       </header>
 
-      {/* INFINITE SCENES CONTAINER */}
       <main className="spatial-stages">
-
-        {/* SCENE 01: QWEN ARCHITECTURE // VERTICAL THRESHOLD */}
-        <section className="spatial-stage" data-depth="0.1">
-          <div className="stage-bg-layer" style={{ backgroundImage: `url(${FEATURED_ASSETS[0].src})` }} />
-          <div className="stage-content" style={{ transform: `translate3d(${gazePoint.x * 0.5}px, ${gazePoint.y * 0.5}px, 100px)` }}>
-            <span className="stage-eyebrow">REFERENCIA 01 // QWEN ARCHITECTURE</span>
-            <h1>El umbral<br /><i>vertical.</i></h1>
-            <p>Estructuras laterales recortadas, columna de luz central y un plano simétrico donde la materia piensa en silencio.</p>
-            <button className="stage-action-btn" onClick={() => triggerSound(SoundPreset.CYBER)}>
-              ACTIVAR NÚCLEO QWEN
+        <section id="origin" className="spatial-hero spatial-stage" aria-labelledby="hero-title">
+          <div className="hero-material" aria-hidden="true">
+            <img src={FEATURED_ASSETS[0].src} alt="" />
+          </div>
+          <div className="hero-architecture hero-architecture-left" aria-hidden="true" />
+          <div className="hero-architecture hero-architecture-right" aria-hidden="true" />
+          <div className="hero-beam" aria-hidden="true" />
+          <div className="hero-core" aria-hidden="true"><MinimalSymbol size={168} glow={false} /></div>
+          <div className="hero-content">
+            <span className="stage-eyebrow">NOIACORE LAB / ORIGIN FIELD</span>
+            <h1 id="hero-title">
+              Una fábrica<br />
+              <i>para lo inevitable.</i>
+            </h1>
+            <p>Una performance lenta de materia, criterio y profundidad. El sistema no te recibe: espera a que su escala encuentre la tuya.</p>
+            <button className="text-gesture" type="button" onClick={() => scrollToChapter('threshold')}>
+              <span>Entrar en el umbral</span>
+              <i aria-hidden="true" />
             </button>
           </div>
-          <div className="stage-depth-indicator">Z +100px // FRONT MATRIX</div>
+          <div className="hero-footer" aria-hidden="true">
+            <span>BLACK FIELD / 00</span>
+            <span>MOVE THROUGH THE MATERIAL</span>
+            <span>08.2026</span>
+          </div>
         </section>
 
-        {/* SCENE 02: Z.AI // ADVANCED AGENT MASTER STATION */}
-        <section className="spatial-stage" data-depth="0.3">
-          <div className="stage-bg-layer" style={{ backgroundImage: `url(${FEATURED_ASSETS[1].src})` }} />
-          <div className="stage-content" style={{ transform: `translate3d(${gazePoint.x * 0.8}px, ${gazePoint.y * 0.8}px, 180px)` }}>
-            <span className="stage-eyebrow">REFERENCIA 02 // Z.AI MASTER STATION</span>
-            <h1>El núcleo<br /><i>orbital.</i></h1>
-            <p>Anillos concéntricos de telemetría y cálculo autónomo en tiempo real sobre superficies de obsidiana absoluta.</p>
-            <button className="stage-action-btn" onClick={() => triggerSound(SoundPreset.SUCCESS)}>
-              SINCRONIZAR ÓRBITA Z.AI
-            </button>
-          </div>
-          <div className="stage-depth-indicator">Z +280px // MID ORBIT</div>
-        </section>
-
-        {/* SCENE 03: MANOS ABIERTAS // MASTER STATION */}
-        <section className="spatial-stage" data-depth="0.5">
-          <div className="stage-bg-layer" style={{ backgroundImage: `url(${FEATURED_ASSETS[2].src})` }} />
-          <div className="stage-content" style={{ transform: `translate3d(${gazePoint.x * 1.1}px, ${gazePoint.y * 1.1}px, 260px)` }}>
-            <span className="stage-eyebrow">REFERENCIA 03 // MANOS ABIERTAS</span>
-            <h1>La atmósfera<br /><i>en suspensión.</i></h1>
-            <p>Capas de polvo cósmico y volúmenes de luz que reaccionan al campo gravitacional del observador.</p>
-            <button className="stage-action-btn" onClick={() => triggerSound(SoundPreset.ACHIEVEMENT)}>
-              CAPTURAR CAMPO ATMOSFÉRICO
-            </button>
-          </div>
-          <div className="stage-depth-indicator">Z +420px // DEEP ATMOSPHERE</div>
-        </section>
-
-        {/* SCENE 04: BELENTANI PORTAL */}
-        <section className="spatial-stage" data-depth="0.7">
-          <div className="stage-bg-layer" style={{ backgroundImage: `url(${FEATURED_ASSETS[3].src})` }} />
-          <div className="stage-content" style={{ transform: `translate3d(${gazePoint.x * 1.4}px, ${gazePoint.y * 1.4}px, 340px)` }}>
-            <span className="stage-eyebrow">REFERENCIA 04 // BELENTANI PORTAL</span>
-            <h1>El guardián<br /><i>de obsidiana.</i></h1>
-            <p>Presencias silenciosas y formas oscuras que custodian los límites de la memoria compartida.</p>
-            <button className="stage-action-btn" onClick={() => triggerSound(SoundPreset.CRITICAL)}>
-              ESTABLECER ENLACE PORTAL
-            </button>
-          </div>
-          <div className="stage-depth-indicator">Z +560px // ABYSS GATEWAY</div>
-        </section>
-
-        {/* SCENE 05: THE 15 FACTORY TOOLS (STATIONS) */}
-        <section className="spatial-stage spatial-tools-stage">
-          <div className="tools-header">
-            <span className="stage-eyebrow">GESTALT ENGINE // 15 FACTORY STATIONS</span>
-            <h2>Quince fuerzas operativas.</h2>
-            <p>Cada estación representa una herramienta de la fábrica conectada por proximidad y continuidad sintética.</p>
-          </div>
-          <div className="tools-grid">
-            {FACTORY_TOOLS.map((tool) => (
-              <div 
-                key={tool.id} 
-                className={`tool-station ${activeTool === tool.id ? 'active' : ''}`}
-                onClick={() => {
-                  setActiveTool(tool.id);
-                  triggerSound(SoundPreset.COMPLETION);
-                }}
-              >
-                <div className="tool-number">STATION // {tool.category.toUpperCase()}</div>
-                <h3>{tool.name}</h3>
-                <p>{tool.description}</p>
-                <span className="tool-status">ONLINE</span>
+        {chapters.map((chapter, chapterIndex) => (
+          <section id={chapter.id} className="spatial-stage chapter-stage" key={chapter.id} aria-labelledby={`${chapter.id}-title`}>
+            <div className="chapter-index" aria-hidden="true">{chapter.index}</div>
+            <div className="chapter-copy">
+              <span className="stage-eyebrow">{chapter.eyebrow}</span>
+              <div className="chapter-telemetry" aria-label={`Lectura material ${chapter.index}`}>
+                <span>FIELD / {chapter.index}</span>
+                <span>AXIS / {chapter.depth.split(' / ')[0]}</span>
+                <span>STATE / OPEN</span>
               </div>
-            ))}
+              <h2 id={`${chapter.id}-title`}>
+                {chapter.title}<br />
+                <i>{chapter.emphasis}</i>
+              </h2>
+              <p>{chapter.body}</p>
+              <div className="chapter-note">
+                <span />
+                <em>{chapter.note}</em>
+              </div>
+              <button className="text-gesture" type="button" onClick={() => scrollToChapter(chapterIndex === chapters.length - 1 ? 'stations' : chapters[chapterIndex + 1].id)}>
+                <span>{chapterIndex === chapters.length - 1 ? 'Descender a la fábrica' : 'Seguir descendiendo'}</span>
+                <i aria-hidden="true" />
+              </button>
+            </div>
+            <figure className="chapter-material" style={{ '--chapter-depth': `${chapterIndex * 28}px` } as React.CSSProperties}>
+              <div className="material-frame material-frame-back" aria-hidden="true" />
+              <img src={chapter.asset.src} alt={chapter.asset.caption} />
+              <figcaption>
+                <span>{chapter.asset.label}</span>
+                <small>{chapter.depth}</small>
+              </figcaption>
+            </figure>
+          </section>
+        ))}
+
+        <section id="stations" className="spatial-stage stations-stage" aria-labelledby="stations-title">
+          <div className="station-intro">
+            <span className="stage-eyebrow">GESTALT ENGINE / 15 FACTORY STATIONS</span>
+            <h2 id="stations-title">Quince fuerzas<br /><i>operativas.</i></h2>
+            <p>La fábrica no se organiza como una colección de aplicaciones. Cada estación modifica la siguiente, y cada recorrido deja una huella distinta en el resultado.</p>
+            <span className="station-count">{String(FACTORY_TOOLS.length).padStart(2, '0')} / CONNECTED THROUGH PROXIMITY</span>
+          </div>
+          <div className="station-field">
+            <div className="station-list" role="list" aria-label="Estaciones interactivas">
+              {FACTORY_TOOLS.map((tool, index) => (
+                <button
+                  key={tool.id}
+                  type="button"
+                  className={`station-row ${activeToolId === tool.id ? 'is-active' : ''}`}
+                  onClick={() => setActiveToolId(tool.id)}
+                  aria-pressed={activeToolId === tool.id}
+                >
+                  <span className="station-number">{String(index + 1).padStart(2, '0')}</span>
+                  <span className="station-name">{tool.name}</span>
+                  <span className="station-category">{tool.category}</span>
+                </button>
+              ))}
+            </div>
+            {activeTool && (
+              <aside className="station-reading" aria-live="polite">
+                <span className="stage-eyebrow">SELECTED FORCE / {activeTool.category.toUpperCase()}</span>
+                <h3>{activeTool.name}</h3>
+                <p>{activeTool.description}</p>
+                <div className="reading-rule" aria-hidden="true" />
+                <span>{activeTool.id.replaceAll('_', ' ')} / READY FOR CONTEXT</span>
+              </aside>
+            )}
           </div>
         </section>
 
-        {/* SCENE 06: ARCHIVE MATRIX // ENDLESS COLLAGE */}
-        <section className="spatial-stage spatial-matrix-stage">
-          <div className="tools-header">
-            <span className="stage-eyebrow">ARCHIVE MATRIX // RAW ASSETS</span>
-            <h2>La materia original.</h2>
-            <p>Todos los archivos y capturas aportados integrados en el flujo tridimensional de la fábrica.</p>
+        <section id="archive" className="spatial-stage archive-stage" aria-labelledby="archive-title">
+          <div className="archive-heading">
+            <span className="stage-eyebrow">ARCHIVE MATRIX / USER MATERIALS</span>
+            <h2 id="archive-title">La materia<br /><i>original.</i></h2>
+            <p>Fragmentos reales del archivo aportado, tratados como superficie, escala y memoria. La fábrica conserva su procedencia y cambia su distancia.</p>
           </div>
-          <div className="matrix-grid">
-            {ARCHIVE_ASSETS.map((asset, i) => (
-              <div key={asset.id} className="matrix-card" style={{ transform: `translateZ(${(i + 1) * 15}px)` }}>
-                <img src={asset.src} alt={asset.caption} />
-                <div className="matrix-meta">
+          <div className="archive-grid">
+            {ARCHIVE_ASSETS.slice(0, 8).map((asset, index) => (
+              <figure className={`archive-piece archive-piece-${(index % 7) + 1}`} key={asset.id}>
+                <img src={asset.src} alt={asset.caption} loading={index > 2 ? 'lazy' : 'eager'} />
+                <figcaption>
                   <span>{asset.label}</span>
                   <small>{asset.caption}</small>
-                </div>
-              </div>
+                </figcaption>
+              </figure>
             ))}
           </div>
         </section>
 
+        <section id="machine" className="spatial-stage machine-stage" aria-labelledby="machine-title">
+          <div className="machine-field" aria-hidden="true">
+            <div className="machine-core"><MinimalSymbol size={74} glow={false} /></div>
+            <div className="machine-orbit machine-orbit-one" />
+            <div className="machine-orbit machine-orbit-two" />
+            <span className="machine-node node-one" />
+            <span className="machine-node node-two" />
+            <span className="machine-node node-three" />
+            <span className="machine-axis" />
+          </div>
+          <div className="machine-copy">
+            <span className="stage-eyebrow">MIND OF THE MACHINE / CONTEXT ENGINE</span>
+            <h2 id="machine-title">El razonamiento<br /><i>no hace ruido.</i></h2>
+            <p>Entre una estación y la siguiente, la máquina hace algo más importante que responder: conserva la tensión de la pregunta hasta encontrar una forma precisa de devolverla.</p>
+            <div className="machine-caption">
+              <span>CONTEXT PRESERVED</span>
+              <span>LATENCY / HUMAN SCALE</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="final" className="spatial-stage final-stage" aria-labelledby="final-title">
+          <div className="final-symbol"><MinimalSymbol size={72} glow={false} /></div>
+          <div className="final-copy">
+            <span className="stage-eyebrow">NOIACORE LAB / EXIT CONDITION</span>
+            <h2 id="final-title">Sal de la fábrica<br /><i>con otra escala.</i></h2>
+            <p>No hay un final cerrado. Solo una distancia nueva entre lo que trajiste y lo que ahora puede existir.</p>
+            <button className="text-gesture" type="button" onClick={() => scrollToChapter('origin')}>
+              <span>Volver al origen</span>
+              <i aria-hidden="true" />
+            </button>
+          </div>
+          <span className="final-depth" aria-hidden="true">Z +∞ / EXIT CONDITION</span>
+        </section>
       </main>
 
       <footer className="spatial-footer">
-        <span>NOIACORE LAB 2026 // INFINITE FACTORY</span>
-        <span>WEB INACABABLE // ACTIVE Z-DEPTH</span>
+        <span className="footer-mark"><MinimalSymbol size={18} glow={false} /> NOIACORE LAB / 2026</span>
+        <span>THE MATERIAL REMAINS</span>
+        <a href="#origin">RETURN TO ORIGIN</a>
       </footer>
     </div>
   );

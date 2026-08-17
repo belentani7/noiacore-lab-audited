@@ -15,9 +15,9 @@
 - **Design Movement:** Dark Sci-Fi & Immersive FUI (Futuristic User Interface).
 - **Core Principles:** 
   1. *Inmersión Total:* Todo reacciona al cursor y al scroll (ondas gravitacionales, partículas neuronales).
-  2. *Jerarquía Extrema:* Uso de Space Grotesk ultraligera y tipografías monoespaciadas para telemetría.
+  2. *Jerarquía Extrema:* Space Grotesk para la escala monumental e Inter para cuerpo, señalética y telemetría; no se introduce una tercera familia.
   3. *Recompensa Variable:* Micro-interacciones satisfactorias que generan dopamina visual y sonora.
-- **Color Philosophy:** Fondo `#040406` con gradientes radiales sutiles, acentuado por azul eléctrico (`#7d9bff`) y destellos de alerta en naranja cálido (`#ff9e5a`).
+- **Color Philosophy:** Negro absoluto (`#000000`) como origen y piedra fría de muy baja saturación para revelar profundidad. No se usan azul saturado, naranja ni cálidos; la intensidad se construye con contraste, luz mineral y densidad de textura.
 - **Layout Paradigm:** Asimétrico, inspirado en paneles de control orbitales y centros de mando de IA, rompiendo el grid tradicional con HUDs flotantes y ventanas modulares.
 - **Signature Elements:** 
   1. Núcleo central interactivo con efecto de lente gravitacional (simulación de agujero negro).
@@ -25,14 +25,14 @@
   3. Sistema de "Reboot / Sobrecarga" que altera la atmósfera visual.
 - **Interaction Philosophy:** Cada clic emite ondas gravitacionales y ondas expansivas de partículas; el usuario siente que controla un núcleo vivo.
 - **Animation:** Curvas fluidas `cubic-bezier(0.23, 1, 0.32, 1)`, partículas a 60 FPS, transiciones sin fisuras.
-- **Typography System:** Títulos en *Space Grotesk*, datos y telemetría en *JetBrains Mono* / *Inter* para el cuerpo.
+- **Typography System:** Títulos en *Space Grotesk*; cuerpo, señalética y telemetría en *Inter*. Máximo dos familias en todo el proyecto.
 - **Brand Essence:** Inteligencia invisible, impacto inevitable. (Adjetivos: Hipnótico, Preciso, Vivo).
 - **Brand Voice:** Solemne, técnica, críptica y magnética. 
   - Ejemplo 1: "El núcleo está invisible. El impacto es inevitable."
   - Ejemplo 2: "Iniciando secuencia de armonización cognitiva..."
 - **Wordmark & Logo:** Logotipo vectorial minimalista con un núcleo concéntrico y anillos orbitales.
-- **Signature Brand Color:** Azul Eléctrico Cuántico (`#7d9bff`).
+- **Signature Brand Color:** Blanco mineral sobre negro absoluto; la firma no depende de un color saturado, sino de la columna de luz y la A orbital.
 
 ## Style Decisions
 
-The concentric-core/orbital glyph repeats across hero, navigation, footer and key system panels so NOIACORE is remembered by symbol as much as by wordmark. Electric blue `#7d9bff` remains the primary intelligence signal; warm orange `#ff9e5a` is reserved for anomaly, alert, overload and irreversible-impact moments. The page rhythm alternates between cinematic voids, monumental cryptic statements and dense HUD telemetry clusters, so the experience behaves like a living cognitive control system rather than a standard studio page. All fallbacks preserve the same visual language when generated assets are temporarily unavailable.
+The A glyph is concentric and orbital, and repeats across hero, navigation, footer and key material fields so NOIACORE is remembered by symbol as much as by wordmark. The user-approved mineral override is binding: absolute black, cold stone grey and white mineral only; no saturated blue, orange or warm accent. Silence is the default state. The page rhythm alternates between cinematic voids, monumental cryptic statements and restrained telemetry clusters, so the experience feels alive without becoming a generic command dashboard. All fallbacks preserve the same visual language when generated assets are temporarily unavailable.
